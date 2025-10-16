@@ -5,6 +5,7 @@
 *.swp
 .DS_Store
 .atom/
+.packages
 .build/
 .buildlog/
 .history
@@ -27,11 +28,11 @@ migrate_working_dir/
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
+.flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
 /build/
-/coverage/
 
 # Symbolication related
 app.*.symbols
@@ -39,7 +40,48 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+*.g.dart
+*.gr.dart
+*.gen.dart
+*.config.dart
+**/injection.config.dart
+/android/settings_aar.gradle
+*.freezed.dart
+.fvm/flutter_sdk
+*.lock
+
+# VSCode Related
+.vscode/settings.json
+
+# FVM releated
+.fvm/
+.fvmrc
+
+# Firebase releated
+.firebase/
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+android/release.keystore
+android/key.properties
+
+# iOS
+ios/Pods/
+ios/Runner/GoogleService-Info.plist
+
+# Android
+android/.gradle/
+android/app/google-services.json
+android/app/*.keystore
+
+# Firebase
+firebase-debug.log
+.firebaserc
+firebase.json
+
+# Env / secrets
+.env
+*.env
