@@ -7,46 +7,50 @@ class AppTextFieldWidget extends StatelessWidget {
   const AppTextFieldWidget({
     super.key,
     required this.hintText,
-    required this.maxLine,
     required this.controller,
     required this.onTextRecognized,
   });
 
   final String hintText;
-  final int maxLine;
   final TextEditingController controller;
   final void Function(String)? onTextRecognized;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            color: AppColors.colorSkyMist,
-            borderRadius: BorderRadius.circular(8),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.colorSkyMist,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 40, maxHeight: 160),
+              child: Scrollbar(
+                child: TextField(
+                  controller: controller,
+                  decoration: InputDecoration(
+                    hintText: hintText,
+                    hintStyle: AppTextStyle.light14,
+                    border: InputBorder.none,
+                  ),
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  textInputAction: TextInputAction.newline,
+                ),
+              ),
+            ),
           ),
 
-          child: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              hintText: hintText,
-              hintStyle: AppTextStyle.light14,
-            ),
-            maxLines: maxLine,
-            textInputAction: TextInputAction.done,
-          ),
-        ),
-        if (onTextRecognized != null)
-          Positioned(
-            bottom: 6,
-            right: 10,
-            child: SpeechTextWidget(onTextRecognized: onTextRecognized!),
-          ),
-      ],
+          if (onTextRecognized != null) ...[
+            const SizedBox(width: 8),
+            SpeechTextWidget(onTextRecognized: onTextRecognized!),
+          ],
+        ],
+      ),
     );
   }
 }

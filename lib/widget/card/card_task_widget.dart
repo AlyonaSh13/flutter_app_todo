@@ -57,9 +57,11 @@ class CardTaskWidget extends StatelessWidget {
                   ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                      padding: const EdgeInsets.only(
+                        left: 12,
+                        right: 40,
+                        top: 8,
+                        bottom: 8,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
