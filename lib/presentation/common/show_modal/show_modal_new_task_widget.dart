@@ -85,7 +85,6 @@ class _ShowModalNewTaskWidgetState
             AppTextFieldWidget(
               controller: _titleController,
               hintText: 'Add Task Name',
-              maxLine: 1,
               onTextRecognized: (value) {
                 _titleController.text = value;
               },
@@ -96,7 +95,6 @@ class _ShowModalNewTaskWidgetState
             AppTextFieldWidget(
               controller: _descriptionController,
               hintText: 'Add Descriptions',
-              maxLine: 5,
               onTextRecognized: (value) {
                 _descriptionController.text = value;
               },
