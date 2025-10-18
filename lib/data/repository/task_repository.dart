@@ -1,5 +1,6 @@
-import 'package:flutter_app_todo/domain/task_domain.dart';
+import 'package:flutter_app_todo/domain/entities/task_domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
 final Provider<TaskRepository> taskRepositoryProvider = Provider(
   (ref) => TaskRepositoryImpl(),
@@ -7,38 +8,32 @@ final Provider<TaskRepository> taskRepositoryProvider = Provider(
 
 abstract class TaskRepository {
   Future<void> addTask({required TaskDomain task});
-  Future<void> updateTask({required int index, required TaskDomain task});
-  Future<void> deleteTask({required int index});
+  Future<void> updateTask({required TaskDomain task});
+  Future<void> deleteTask({required String id});
   Future<List<TaskDomain>> getTasks();
 }
 
-final List<TaskDomain> _tasks = [];
+List<TaskDomain> _tasks = [];
 
 class TaskRepositoryImpl implements TaskRepository {
   @override
   Future<void> addTask({required TaskDomain task}) async {
-    _tasks.add(task);
+    _tasks.add(task.copyWith(id: const Uuid().v4()));
   }
 
   @override
-  Future<void> updateTask({
-    required int index,
-    required TaskDomain task,
-  }) async {
-    if (index >= 0 && index < _tasks.length) {
-      _tasks[index] = task;
-    } else {
-      return;
-    }
+  Future<void> updateTask({required TaskDomain task}) async {
+    _tasks = _tasks.map((e) {
+      if (e.id == task.id) {
+        return task;
+      }
+      return e;
+    }).toList();
   }
 
   @override
-  Future<void> deleteTask({required int index}) async {
-    if (index >= 0 && index < _tasks.length) {
-      _tasks.removeAt(index);
-    } else {
-      throw Exception('Invalid task index');
-    }
+  Future<void> deleteTask({required String id}) async {
+    _tasks.removeWhere((e) => e.id == id);
   }
 
   @override

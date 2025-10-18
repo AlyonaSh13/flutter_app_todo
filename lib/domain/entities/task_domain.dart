@@ -1,9 +1,11 @@
 import 'package:equatable/equatable.dart';
+
 import 'package:flutter_app_todo/core/utils/constants.dart';
-import 'package:flutter_app_todo/core/utils/get_task_category_color.dart';
+import 'package:flutter_app_todo/domain/entities/enums/task_category.dart';
 
 class TaskDomain extends Equatable {
   const TaskDomain({
+    required this.id,
     required this.title,
     required this.description,
     required this.date,
@@ -13,6 +15,7 @@ class TaskDomain extends Equatable {
   });
 
   const TaskDomain.empty({
+    this.id = '',
     this.title = '',
     this.description = '',
     this.date = DateFormats.dayMonthYear,
@@ -21,6 +24,7 @@ class TaskDomain extends Equatable {
     this.isCompleted = false,
   });
 
+  final String id;
   final String title;
   final String description;
   final String date;
@@ -29,6 +33,7 @@ class TaskDomain extends Equatable {
   final bool isCompleted;
 
   TaskDomain copyWith({
+    String? id,
     String? title,
     String? description,
     String? date,
@@ -37,6 +42,7 @@ class TaskDomain extends Equatable {
     bool? isCompleted,
   }) {
     return TaskDomain(
+      id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
       date: date ?? this.date,
@@ -48,6 +54,7 @@ class TaskDomain extends Equatable {
 
   @override
   List<Object> get props => [
+    id,
     title,
     description,
     date,

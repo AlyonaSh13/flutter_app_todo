@@ -17,9 +17,6 @@ class IconButtonWidget extends StatelessWidget {
       icon: icon,
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.all(AppColors.colorSkyMist),
-        // shape: WidgetStateProperty.all(
-        //   RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        // ),
         shadowColor: WidgetStateProperty.all(
           AppColors.colorSteelBlue.withValues(alpha: 0.3),
         ),

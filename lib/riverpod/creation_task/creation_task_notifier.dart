@@ -1,5 +1,5 @@
-import 'package:flutter_app_todo/domain/task_domain.dart';
-import 'package:flutter_app_todo/domain/usecase/task/add_task_usecase.dart';
+import 'package:flutter_app_todo/domain/entities/task_domain.dart';
+import 'package:flutter_app_todo/domain/usecases/task/add_task_usecase.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'creation_task_notifier.g.dart';

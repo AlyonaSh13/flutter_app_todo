@@ -1,48 +1,42 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app_todo/core/utils/date_time_extension.dart';
-import 'package:flutter_app_todo/domain/usecase/task/update_task_usecase.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:flutter_app_todo/domain/task_domain.dart';
+import 'package:flutter_app_todo/core/extensions/date_time_extension.dart';
+import 'package:flutter_app_todo/domain/entities/task_domain.dart';
+import 'package:flutter_app_todo/domain/usecases/task/update_task_usecase.dart';
 
 part 'details_task_notifier.g.dart';
 
 class DetailsTaskState {
-  const DetailsTaskState({
-    required this.task,
-    required this.index,
-    required this.isEditing,
-  });
+  const DetailsTaskState({required this.task, required this.isEditing});
 
   final TaskDomain task;
-  final int index;
   final bool isEditing;
 
-  DetailsTaskState copyWith({TaskDomain? task, int? index, bool? isEditing}) {
+  DetailsTaskState copyWith({TaskDomain? task, bool? isEditing}) {
     return DetailsTaskState(
       task: task ?? this.task,
-      index: index ?? this.index,
       isEditing: isEditing ?? this.isEditing,
     );
   }
 }
 
-class DetailsTaskVmParams {
-  const DetailsTaskVmParams({required this.task, required this.index});
+class DetailsTaskVmParams extends Equatable {
+  const DetailsTaskVmParams({required this.task});
 
   final TaskDomain task;
-  final int index;
+
+  @override
+  List<Object> get props => [task];
 }
 
 @riverpod
 class DetailsTaskVm extends _$DetailsTaskVm {
   @override
   DetailsTaskState build(DetailsTaskVmParams params) {
-    return DetailsTaskState(
-      task: params.task,
-      index: params.index,
-      isEditing: false,
-    );
+    return DetailsTaskState(task: params.task, isEditing: false);
   }
 
   void toggleEdit() {
@@ -75,9 +69,7 @@ class DetailsTaskVm extends _$DetailsTaskVm {
   }
 
   Future<void> saveChanges() async {
-    await ref
-        .read(updateTaskUseCaseProvider)
-        .call(UpdateTaskParams(index: state.index, task: state.task));
+    await ref.read(updateTaskUseCaseProvider).call(state.task);
 
     state = state.copyWith(isEditing: false);
   }

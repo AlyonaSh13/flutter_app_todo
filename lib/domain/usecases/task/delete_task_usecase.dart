@@ -6,13 +6,13 @@ final deleteTaskUseCaseProvider = Provider(
   (ref) => DeleteTaskUseCase(ref.watch(taskRepositoryProvider)),
 );
 
-class DeleteTaskUseCase extends UseCase<void, int> {
+class DeleteTaskUseCase extends UseCase<void, String> {
   DeleteTaskUseCase(this._repository);
 
   final TaskRepository _repository;
 
   @override
-  Future<void> call(int params) async {
-    return await _repository.deleteTask(index: params);
+  Future<void> call(String params) async {
+    return await _repository.deleteTask(id: params);
   }
 }

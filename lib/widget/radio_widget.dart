@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_todo/core/utils/get_task_category_color.dart';
+import 'package:flutter_app_todo/domain/entities/enums/task_category.dart';
 import 'package:flutter_app_todo/resources/themes/app_text_style.dart';
 
 class RadioWidget extends StatelessWidget {
