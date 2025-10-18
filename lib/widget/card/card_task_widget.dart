@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_todo/core/utils/get_task_category_color.dart';
+import 'package:flutter_app_todo/domain/entities/enums/task_category.dart';
 import 'package:flutter_app_todo/resources/themes/app_colors.dart';
 import 'package:flutter_app_todo/resources/themes/app_text_style.dart';
 
@@ -60,13 +60,12 @@ class CardTaskWidget extends StatelessWidget {
                       padding: const EdgeInsets.only(
                         left: 12,
                         right: 40,
-                        top: 8,
-                        bottom: 8,
+                        top: 12,
+                        bottom: 14,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 4),
                           Text(
                             title,
                             style: AppTextStyle.bold18,
@@ -91,7 +90,6 @@ class CardTaskWidget extends StatelessWidget {
                               Text(time, style: AppTextStyle.light14),
                             ],
                           ),
-                          const SizedBox(height: 6),
                         ],
                       ),
                     ),

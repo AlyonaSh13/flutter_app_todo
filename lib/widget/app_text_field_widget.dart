@@ -8,11 +8,13 @@ class AppTextFieldWidget extends StatelessWidget {
     super.key,
     required this.hintText,
     required this.controller,
+    required this.scrollController,
     required this.onTextRecognized,
   });
 
   final String hintText;
   final TextEditingController controller;
+  final ScrollController? scrollController;
   final void Function(String)? onTextRecognized;
 
   @override
@@ -29,18 +31,17 @@ class AppTextFieldWidget extends StatelessWidget {
           Expanded(
             child: ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 40, maxHeight: 160),
-              child: Scrollbar(
-                child: TextField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    hintText: hintText,
-                    hintStyle: AppTextStyle.light14,
-                    border: InputBorder.none,
-                  ),
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  textInputAction: TextInputAction.newline,
+              child: TextField(
+                controller: controller,
+                scrollController: scrollController,
+                decoration: InputDecoration(
+                  hintText: hintText,
+                  hintStyle: AppTextStyle.light14,
+                  border: InputBorder.none,
                 ),
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                textInputAction: TextInputAction.newline,
               ),
             ),
           ),

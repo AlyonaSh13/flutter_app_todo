@@ -6,15 +6,15 @@ import 'package:flutter_app_todo/widget/ink_well_material_widget.dart';
 class DateTimeButtonWidget extends StatelessWidget {
   const DateTimeButtonWidget({
     super.key,
-    required this.titleText,
-    required this.valueText,
-    required this.iconSection,
+    required this.title,
+    required this.value,
+    required this.icon,
     required this.onTap,
   });
 
-  final String titleText;
-  final String valueText;
-  final IconData iconSection;
+  final String title;
+  final String value;
+  final IconData icon;
   final Function()? onTap;
 
   @override
@@ -23,7 +23,7 @@ class DateTimeButtonWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(titleText, style: AppTextStyle.normal16),
+          Text(title, style: AppTextStyle.normal16),
           const SizedBox(height: 6),
           InkWellMaterialWidget(
             borderRadius: BorderRadius.circular(6),
@@ -36,9 +36,9 @@ class DateTimeButtonWidget extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(iconSection, color: AppColors.colorSteelBlue, size: 18),
+                  Icon(icon, color: AppColors.colorSteelBlue, size: 18),
                   const SizedBox(width: 6),
-                  Text(valueText, style: AppTextStyle.light14),
+                  Text(value, style: AppTextStyle.light14),
                 ],
               ),
             ),

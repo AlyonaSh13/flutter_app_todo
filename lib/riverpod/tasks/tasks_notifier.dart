@@ -1,7 +1,7 @@
-import 'package:flutter_app_todo/domain/task_domain.dart';
-import 'package:flutter_app_todo/domain/usecase/task/delete_task_usecase.dart';
-import 'package:flutter_app_todo/domain/usecase/task/get_task_usecase.dart';
-import 'package:flutter_app_todo/domain/usecase/task/update_task_usecase.dart';
+import 'package:flutter_app_todo/domain/entities/task_domain.dart';
+import 'package:flutter_app_todo/domain/usecases/task/delete_task_usecase.dart';
+import 'package:flutter_app_todo/domain/usecases/task/get_task_usecase.dart';
+import 'package:flutter_app_todo/domain/usecases/task/update_task_usecase.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'tasks_notifier.g.dart';
@@ -19,8 +19,8 @@ class TasksVm extends _$TasksVm {
     );
   }
 
-  Future<void> deleteTask(int index) async {
-    await ref.read(deleteTaskUseCaseProvider)(index);
+  Future<void> deleteTask(String id) async {
+    await ref.read(deleteTaskUseCaseProvider)(id);
     await loadTasks();
   }
 
@@ -28,9 +28,7 @@ class TasksVm extends _$TasksVm {
     final tasks = state.requireValue;
     final task = tasks[index];
     final updatedTask = task.copyWith(isCompleted: !task.isCompleted);
-    await ref
-        .read(updateTaskUseCaseProvider)
-        .call(UpdateTaskParams(index: index, task: updatedTask));
+    await ref.read(updateTaskUseCaseProvider).call(updatedTask);
     await loadTasks();
   }
 }

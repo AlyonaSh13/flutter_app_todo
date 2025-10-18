@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_todo/domain/task_with_index_domain.dart';
+import 'package:flutter_app_todo/domain/entities/task_domain.dart';
 import 'package:flutter_app_todo/riverpod/details_task/details_task_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_app_todo/resources/themes/app_colors.dart';
@@ -8,7 +8,7 @@ import 'package:flutter_app_todo/widget/app_scaffold_widget.dart';
 import 'package:flutter_app_todo/widget/button/date_time_button_widget.dart';
 import 'package:flutter_app_todo/widget/ink_well_material_widget.dart';
 
-final detailsTaskPageDataProvider = Provider<TaskWithIndexDomain>(
+final detailsTaskPageDataProvider = Provider<TaskDomain>(
   (ref) => throw Exception(),
 );
 
@@ -19,10 +19,7 @@ class DetailsTaskPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final detailsTaskPageData = ref.watch(detailsTaskPageDataProvider);
 
-    final params = DetailsTaskVmParams(
-      task: detailsTaskPageData.task,
-      index: detailsTaskPageData.index,
-    );
+    final params = DetailsTaskVmParams(task: detailsTaskPageData);
 
     final provider = detailsTaskVmProvider(params);
     final state = ref.watch(provider);
@@ -60,9 +57,9 @@ class DetailsTaskPage extends ConsumerWidget {
               ),
             ],
           ),
-          child: const Padding(
-            padding: EdgeInsets.all(20),
-            child: _BodyWidget(),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: _BodyWidget(task: state.task),
           ),
         ),
       ),
@@ -71,7 +68,9 @@ class DetailsTaskPage extends ConsumerWidget {
 }
 
 class _BodyWidget extends ConsumerStatefulWidget {
-  const _BodyWidget();
+  const _BodyWidget({required this.task});
+
+  final TaskDomain task;
 
   @override
   ConsumerState<_BodyWidget> createState() => _BodyWidgetState();
@@ -80,6 +79,13 @@ class _BodyWidget extends ConsumerStatefulWidget {
 class _BodyWidgetState extends ConsumerState<_BodyWidget> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController.text = widget.task.title;
+    _descriptionController.text = widget.task.description;
+  }
 
   @override
   void dispose() {
@@ -92,10 +98,7 @@ class _BodyWidgetState extends ConsumerState<_BodyWidget> {
   Widget build(BuildContext context) {
     final detailsTaskPageData = ref.watch(detailsTaskPageDataProvider);
 
-    final params = DetailsTaskVmParams(
-      task: detailsTaskPageData.task,
-      index: detailsTaskPageData.index,
-    );
+    final params = DetailsTaskVmParams(task: detailsTaskPageData);
 
     final provider = detailsTaskVmProvider(params);
     final state = ref.watch(provider);
@@ -135,9 +138,9 @@ class _BodyWidgetState extends ConsumerState<_BodyWidget> {
           children: [
             if (state.isEditing)
               DateTimeButtonWidget(
-                titleText: 'Date',
-                valueText: state.task.date,
-                iconSection: Icons.calendar_month,
+                title: 'Date',
+                value: state.task.date,
+                icon: Icons.calendar_month,
                 onTap: () async {
                   final picked = await showDatePicker(
                     context: context,
@@ -153,9 +156,9 @@ class _BodyWidgetState extends ConsumerState<_BodyWidget> {
             const SizedBox(width: 20),
             if (state.isEditing)
               DateTimeButtonWidget(
-                titleText: 'Time',
-                valueText: state.task.time,
-                iconSection: Icons.timer_outlined,
+                title: 'Time',
+                value: state.task.time,
+                icon: Icons.timer_outlined,
                 onTap: () async {
                   final picked = await showTimePicker(
                     context: context,
@@ -211,7 +214,7 @@ class _EditableTextField extends StatelessWidget {
     this.maxLines = 1,
   });
 
-  final TextEditingController? controller;
+  final TextEditingController controller;
   final bool isEditing;
   final String value;
   final String hint;
@@ -223,8 +226,6 @@ class _EditableTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isEditing) {
       return TextField(
-        // controller: TextEditingController(text: value)
-        //   ..selection = TextSelection.collapsed(offset: value.length),
         controller: controller,
         onChanged: onChanged,
         style: style,

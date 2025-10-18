@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_todo/core/utils/date_time_extension.dart';
-import 'package:flutter_app_todo/domain/task_domain.dart';
+import 'package:flutter_app_todo/core/extensions/date_time_extension.dart';
+import 'package:flutter_app_todo/domain/entities/task_domain.dart';
 import 'package:flutter_app_todo/riverpod/tasks/tasks_notifier.dart';
 import 'package:flutter_app_todo/presentation/pages/tasks/tasks_router.dart';
 import 'package:flutter_app_todo/resources/themes/app_colors.dart';
@@ -74,7 +74,7 @@ class _BodyWidget extends StatelessWidget {
   }
 }
 
-class _HeaderSectionWidget extends ConsumerWidget {
+class _HeaderSectionWidget extends StatelessWidget {
   const _HeaderSectionWidget();
 
   void _onPressed(BuildContext context, WidgetRef ref) async {
@@ -91,19 +91,23 @@ class _HeaderSectionWidget extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const _TitleSectionWidget(),
-        ButtonWidget(
-          titleText: '+ New Task',
-          textStyle: AppTextStyle.light14.copyWith(
-            color: AppColors.colorPureWhite,
-          ),
-          onPressed: () => _onPressed(context, ref),
-          backgroundColor: AppColors.colorOceanBlue,
-          foregroundColor: AppColors.colorPureWhite,
+        Consumer(
+          builder: (context, ref, _) {
+            return ButtonWidget(
+              title: '+ New Task',
+              textStyle: AppTextStyle.light14.copyWith(
+                color: AppColors.colorPureWhite,
+              ),
+              onPressed: () => _onPressed(context, ref),
+              backgroundColor: AppColors.colorOceanBlue,
+              foregroundColor: AppColors.colorPureWhite,
+            );
+          },
         ),
       ],
     );
@@ -158,7 +162,8 @@ class _CardTaskWidget extends ConsumerWidget {
           onToggleComplete: () {
             ref.read(tasksVmProvider.notifier).toggleComplete(index);
           },
-          onDelete: () => ref.read(tasksVmProvider.notifier).deleteTask(index),
+          onDelete: () =>
+              ref.read(tasksVmProvider.notifier).deleteTask(task.id),
         );
       },
       separatorBuilder: (context, index) {

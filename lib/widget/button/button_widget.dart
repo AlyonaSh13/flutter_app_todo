@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ButtonWidget extends StatelessWidget {
   const ButtonWidget({
     super.key,
-    required this.titleText,
+    required this.title,
     required this.textStyle,
     required this.onPressed,
     required this.backgroundColor,
@@ -11,7 +11,7 @@ class ButtonWidget extends StatelessWidget {
     this.side,
   });
 
-  final String titleText;
+  final String title;
   final TextStyle textStyle;
   final void Function()? onPressed;
   final Color backgroundColor;
@@ -30,7 +30,7 @@ class ButtonWidget extends StatelessWidget {
         side: side,
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
       ),
-      child: Text(titleText, style: textStyle),
+      child: Text(title, style: textStyle),
     );
   }
 }

@@ -3,9 +3,9 @@ import 'package:flutter_app_todo/riverpod/creation_task/creation_task_notifier.d
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:flutter_app_todo/core/utils/date_time_extension.dart';
-import 'package:flutter_app_todo/core/utils/get_task_category_color.dart';
-import 'package:flutter_app_todo/domain/task_domain.dart';
+import 'package:flutter_app_todo/core/extensions/date_time_extension.dart';
+import 'package:flutter_app_todo/domain/entities/enums/task_category.dart';
+import 'package:flutter_app_todo/domain/entities/task_domain.dart';
 import 'package:flutter_app_todo/resources/themes/app_colors.dart';
 import 'package:flutter_app_todo/resources/themes/app_text_style.dart';
 import 'package:flutter_app_todo/widget/app_text_field_widget.dart';
@@ -43,12 +43,16 @@ class _ShowModalNewTaskWidget extends ConsumerStatefulWidget {
 class _ShowModalNewTaskWidgetState
     extends ConsumerState<_ShowModalNewTaskWidget> {
   final _titleController = TextEditingController();
+  final _titleScrollController = ScrollController();
   final _descriptionController = TextEditingController();
+  final _descriptionScrollController = ScrollController();
 
   @override
   void dispose() {
     _titleController.dispose();
+    _titleScrollController.dispose();
     _descriptionController.dispose();
+    _descriptionScrollController.dispose();
     super.dispose();
   }
 
@@ -70,8 +74,7 @@ class _ShowModalNewTaskWidgetState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(
-              width: double.infinity,
+            const Center(
               child: Text(
                 'New Task Todo',
                 style: AppTextStyle.bold18,
@@ -84,6 +87,7 @@ class _ShowModalNewTaskWidgetState
             const SizedBox(height: 6),
             AppTextFieldWidget(
               controller: _titleController,
+              scrollController: _titleScrollController,
               hintText: 'Add Task Name',
               onTextRecognized: (value) {
                 _titleController.text = value;
@@ -94,6 +98,7 @@ class _ShowModalNewTaskWidgetState
             const SizedBox(height: 6),
             AppTextFieldWidget(
               controller: _descriptionController,
+              scrollController: _descriptionScrollController,
               hintText: 'Add Descriptions',
               onTextRecognized: (value) {
                 _descriptionController.text = value;
@@ -197,9 +202,9 @@ class _RowDateTimeButtonsWidget extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         DateTimeButtonWidget(
-          titleText: 'Date',
-          valueText: date,
-          iconSection: Icons.calendar_month,
+          title: 'Date',
+          value: date,
+          icon: Icons.calendar_month,
           onTap: () async {
             final dateResult = await showDatePicker(
               context: context,
@@ -215,9 +220,9 @@ class _RowDateTimeButtonsWidget extends ConsumerWidget {
         ),
         const SizedBox(width: 22),
         DateTimeButtonWidget(
-          titleText: 'Time',
-          valueText: time,
-          iconSection: Icons.timer_outlined,
+          title: 'Time',
+          value: time,
+          icon: Icons.timer_outlined,
           onTap: () async {
             final timeResult = await showTimePicker(
               context: context,
@@ -255,7 +260,7 @@ class _RowButtonsWidget extends ConsumerWidget {
       children: [
         Expanded(
           child: ButtonWidget(
-            titleText: 'Cancel',
+            title: 'Cancel',
             textStyle: AppTextStyle.light14,
             onPressed: () => context.pop(),
             backgroundColor: AppColors.colorPureWhite,
@@ -266,7 +271,7 @@ class _RowButtonsWidget extends ConsumerWidget {
         const SizedBox(width: 22),
         Expanded(
           child: ButtonWidget(
-            titleText: 'Create',
+            title: 'Create',
             textStyle: AppTextStyle.light14.copyWith(
               color: AppColors.colorPureWhite,
             ),
@@ -275,13 +280,12 @@ class _RowButtonsWidget extends ConsumerWidget {
               ref
                   .read(creationTaskVmProvider.notifier)
                   .add(
-                    TaskDomain(
+                    TaskDomain.empty(
                       title: titleController.text,
                       description: descriptionController.text,
                       date: date,
                       time: time,
                       category: selectedRadio,
-                      isCompleted: false,
                     ),
                   );
             },
