@@ -1,8 +1,7 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_todo/domain/usecases/task/get_task_by_id.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-
 import 'package:flutter_app_todo/core/extensions/date_time_extension.dart';
 import 'package:flutter_app_todo/domain/entities/task_domain.dart';
 import 'package:flutter_app_todo/domain/usecases/task/update_task_usecase.dart';
@@ -24,53 +23,60 @@ class DetailsTaskState {
 }
 
 class DetailsTaskVmParams extends Equatable {
-  const DetailsTaskVmParams({required this.task});
+  const DetailsTaskVmParams({required this.id});
 
-  final TaskDomain task;
+  final String id;
 
   @override
-  List<Object> get props => [task];
+  List<Object> get props => [id];
 }
 
 @riverpod
 class DetailsTaskVm extends _$DetailsTaskVm {
   @override
-  DetailsTaskState build(DetailsTaskVmParams params) {
-    return DetailsTaskState(task: params.task, isEditing: false);
+  Future<DetailsTaskState> build(DetailsTaskVmParams params) async {
+    final task = await ref.read(getTasByIdUseCaseProvider).execute(params.id);
+    return DetailsTaskState(task: task, isEditing: false);
   }
 
   void toggleEdit() {
-    state = state.copyWith(isEditing: !state.isEditing);
+    state = AsyncData(
+      state.requireValue.copyWith(isEditing: !state.requireValue.isEditing),
+    );
   }
 
   void updateTitle(String title) {
-    final task = state.task.copyWith(title: title);
-    state = state.copyWith(task: task);
+    final task = state.requireValue.task.copyWith(title: title);
+    state = AsyncData(state.requireValue.copyWith(task: task));
   }
 
   void updateDescription(String description) {
-    final task = state.task.copyWith(description: description);
-    state = state.copyWith(task: task);
+    final task = state.requireValue.task.copyWith(description: description);
+    state = AsyncData(state.requireValue.copyWith(task: task));
   }
 
   void updateDate(DateTime date) {
-    final task = state.task.copyWith(date: date.formatDayMonthYear());
-    state = state.copyWith(task: task);
+    final task = state.requireValue.task.copyWith(
+      date: date.formatDayMonthYear(),
+    );
+    state = AsyncData(state.requireValue.copyWith(task: task));
   }
 
   void updateTime(TimeOfDay time, BuildContext context) {
-    final task = state.task.copyWith(time: time.format(context));
-    state = state.copyWith(task: task);
+    final task = state.requireValue.task.copyWith(time: time.format(context));
+    state = AsyncData(state.requireValue.copyWith(task: task));
   }
 
   void toggleComplete() {
-    final task = state.task.copyWith(isCompleted: !state.task.isCompleted);
-    state = state.copyWith(task: task);
+    final task = state.requireValue.task.copyWith(
+      isCompleted: !state.requireValue.task.isCompleted,
+    );
+    state = AsyncData(state.requireValue.copyWith(task: task));
   }
 
   Future<void> saveChanges() async {
-    await ref.read(updateTaskUseCaseProvider).call(state.task);
-
-    state = state.copyWith(isEditing: false);
+    final task = state.requireValue.task;
+    await ref.read(updateTaskUseCaseProvider).call(task);
+    state = AsyncData(state.requireValue.copyWith(isEditing: false));
   }
 }

@@ -1,4 +1,3 @@
-import 'package:flutter_app_todo/domain/entities/task_domain.dart';
 import 'package:flutter_app_todo/presentation/pages/tasks/details_task_page.dart';
 import 'package:flutter_app_todo/presentation/pages/tasks/group_task_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,13 +15,12 @@ class GroupTaskRouter {
       },
     ),
     GoRoute(
-      path: detailsTask,
+      path: '$detailsTask/:taskId',
       builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>;
-        final task = extra['task'] as TaskDomain;
+        final String taskId = state.pathParameters['taskId'] ?? '';
 
         return ProviderScope(
-          overrides: [detailsTaskPageDataProvider.overrideWithValue(task)],
+          overrides: [detailsTaskPageDataProvider.overrideWithValue(taskId)],
           child: const DetailsTaskPage(),
         );
       },

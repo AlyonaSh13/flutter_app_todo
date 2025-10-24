@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_todo/domain/entities/enums/task_category.dart';
 import 'package:flutter_app_todo/resources/themes/app_colors.dart';
 import 'package:flutter_app_todo/resources/themes/app_text_style.dart';
+import 'package:flutter_app_todo/widget/text_widget.dart';
 
 class CardTaskWidget extends StatelessWidget {
   const CardTaskWidget({
@@ -40,7 +41,23 @@ class CardTaskWidget extends StatelessWidget {
         child: Container(
           width: double.infinity,
           height: 120,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: AppColors.colorPureWhite,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.colorOceanBlue.withValues(alpha: 0.15),
+                blurRadius: 12,
+                spreadRadius: 1,
+                offset: const Offset(0, 6),
+              ),
+              BoxShadow(
+                color: AppColors.colorSkyMist.withValues(alpha: 0.3),
+                blurRadius: 16,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
           child: Stack(
             children: [
               Row(
@@ -66,16 +83,18 @@ class CardTaskWidget extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          TextWidget(
                             title,
                             style: AppTextStyle.bold18,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 4),
-                          Text(
+                          TextWidget(
                             description,
-                            style: AppTextStyle.normal16,
+                            style: AppTextStyle.medium16.copyWith(
+                              color: AppColors.colorSteelBlue,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -85,9 +104,9 @@ class CardTaskWidget extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              Text(date, style: AppTextStyle.light14),
+                              TextWidget(date, style: AppTextStyle.light14),
                               const SizedBox(width: 12),
-                              Text(time, style: AppTextStyle.light14),
+                              TextWidget(time, style: AppTextStyle.light14),
                             ],
                           ),
                         ],

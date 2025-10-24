@@ -11,6 +11,7 @@ abstract class TaskRepository {
   Future<void> updateTask({required TaskDomain task});
   Future<void> deleteTask({required String id});
   Future<List<TaskDomain>> getTasks();
+  Future<TaskDomain> getTaskById({required String id});
 }
 
 List<TaskDomain> _tasks = [];
@@ -39,5 +40,10 @@ class TaskRepositoryImpl implements TaskRepository {
   @override
   Future<List<TaskDomain>> getTasks() async {
     return [..._tasks];
+  }
+
+  @override
+  Future<TaskDomain> getTaskById({required String id}) async {
+    return _tasks.firstWhere((e) => e.id == id);
   }
 }
