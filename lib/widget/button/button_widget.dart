@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_todo/widget/text_widget.dart';
 
 class ButtonWidget extends StatelessWidget {
   const ButtonWidget({
@@ -30,7 +31,7 @@ class ButtonWidget extends StatelessWidget {
         side: side,
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
       ),
-      child: Text(title, style: textStyle),
+      child: TextWidget(title, style: textStyle),
     );
   }
 }

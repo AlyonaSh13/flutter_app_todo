@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_todo/domain/entities/task_domain.dart';
 import 'package:flutter_app_todo/riverpod/details_task/details_task_notifier.dart';
+import 'package:flutter_app_todo/widget/text_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_app_todo/resources/themes/app_colors.dart';
 import 'package:flutter_app_todo/resources/themes/app_text_style.dart';
-import 'package:flutter_app_todo/widget/app_scaffold_widget.dart';
+import 'package:flutter_app_todo/widget/scaffold_widget.dart';
 import 'package:flutter_app_todo/widget/button/date_time_button_widget.dart';
 import 'package:flutter_app_todo/widget/ink_well_material_widget.dart';
 
-final detailsTaskPageDataProvider = Provider<TaskDomain>(
+final detailsTaskPageDataProvider = Provider<String>(
   (ref) => throw Exception(),
 );
 
@@ -17,60 +17,50 @@ class DetailsTaskPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final detailsTaskPageData = ref.watch(detailsTaskPageDataProvider);
+    final taskIdProvider = ref.read(detailsTaskPageDataProvider);
+    final provider = detailsTaskVmProvider(
+      DetailsTaskVmParams(id: taskIdProvider),
+    );
 
-    final params = DetailsTaskVmParams(task: detailsTaskPageData);
-
-    final provider = detailsTaskVmProvider(params);
     final state = ref.watch(provider);
     final notifier = ref.read(provider.notifier);
 
-    return AppScaffoldWidget(
-      appBar: AppBar(
-        title: const Text('Task Details', style: AppTextStyle.bold18),
-        centerTitle: true,
-        backgroundColor: AppColors.colorSkyMist,
-        iconTheme: const IconThemeData(color: AppColors.colorDeepBlue),
-        actions: [
-          IconButton(
-            icon: Icon(
-              state.isEditing ? Icons.save : Icons.edit,
-              color: AppColors.colorDeepBlue,
-            ),
-            onPressed: () {
-              state.isEditing ? notifier.saveChanges() : notifier.toggleEdit();
-            },
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: AppColors.colorPureWhite,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.shade300,
-                offset: const Offset(0, 2),
-                blurRadius: 6,
+    return state.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) {
+        return Center(
+          child: TextWidget('Error: $e', style: AppTextStyle.regular14),
+        );
+      },
+      data: (data) => ScaffoldWidget(
+        appBar: AppBar(
+          title: const TextWidget('Task Details', style: AppTextStyle.bold18),
+          centerTitle: true,
+          backgroundColor: AppColors.colorSkyMist,
+          iconTheme: const IconThemeData(color: AppColors.colorDeepBlue),
+          actions: [
+            IconButton(
+              icon: Icon(
+                data.isEditing ? Icons.save : Icons.edit,
+                color: AppColors.colorDeepBlue,
               ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: _BodyWidget(task: state.task),
-          ),
+              onPressed: () {
+                data.isEditing ? notifier.saveChanges() : notifier.toggleEdit();
+              },
+            ),
+          ],
         ),
+        body: _BodyWidget(state: data, notifier: notifier),
       ),
     );
   }
 }
 
 class _BodyWidget extends ConsumerStatefulWidget {
-  const _BodyWidget({required this.task});
+  const _BodyWidget({required this.state, required this.notifier});
 
-  final TaskDomain task;
+  final DetailsTaskState state;
+  final DetailsTaskVm notifier;
 
   @override
   ConsumerState<_BodyWidget> createState() => _BodyWidgetState();
@@ -83,8 +73,8 @@ class _BodyWidgetState extends ConsumerState<_BodyWidget> {
   @override
   void initState() {
     super.initState();
-    _titleController.text = widget.task.title;
-    _descriptionController.text = widget.task.description;
+    _titleController.text = widget.state.task.title;
+    _descriptionController.text = widget.state.task.description;
   }
 
   @override
@@ -96,90 +86,103 @@ class _BodyWidgetState extends ConsumerState<_BodyWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final detailsTaskPageData = ref.watch(detailsTaskPageDataProvider);
+    final state = widget.state;
+    final notifier = widget.notifier;
 
-    final params = DetailsTaskVmParams(task: detailsTaskPageData);
-
-    final provider = detailsTaskVmProvider(params);
-    final state = ref.watch(provider);
-    final notifier = ref.read(provider.notifier);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _CategoryColorBar(color: state.task.category.color),
-        const SizedBox(height: 16),
-        _EditableTextField(
-          controller: _titleController,
-          isEditing: state.isEditing,
-          value: state.task.title,
-          hint: 'Task name',
-          style: AppTextStyle.bold18,
-          onChanged: notifier.updateTitle,
-        ),
-        const SizedBox(height: 8),
-        _EditableTextField(
-          controller: _descriptionController,
-          isEditing: state.isEditing,
-          value: state.task.description,
-          hint: 'Task description...',
-          style: AppTextStyle.normal16.copyWith(
-            color: AppColors.colorSteelBlue,
-          ),
-          maxLines: 5,
-          onChanged: notifier.updateDescription,
-        ),
-        const Divider(
-          height: 30,
-          thickness: 1.5,
-          color: AppColors.colorSkyMist,
-        ),
-        Row(
-          children: [
-            if (state.isEditing)
-              DateTimeButtonWidget(
-                title: 'Date',
-                value: state.task.date,
-                icon: Icons.calendar_month,
-                onTap: () async {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2020),
-                    lastDate: DateTime(2050),
-                  );
-                  if (picked != null) notifier.updateDate(picked);
-                },
-              )
-            else
-              _InfoRow(icon: Icons.calendar_month, text: state.task.date),
-            const SizedBox(width: 20),
-            if (state.isEditing)
-              DateTimeButtonWidget(
-                title: 'Time',
-                value: state.task.time,
-                icon: Icons.timer_outlined,
-                onTap: () async {
-                  final picked = await showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay.now(),
-                  );
-                  if (picked != null) {
-                    notifier.updateTime(picked, context);
-                  }
-                },
-              )
-            else
-              _InfoRow(icon: Icons.timer_outlined, text: state.task.time),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: AppColors.colorPureWhite,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade300,
+              offset: const Offset(0, 2),
+              blurRadius: 6,
+            ),
           ],
         ),
-        const SizedBox(height: 20),
-        _CompletionToggle(
-          isEditing: state.isEditing,
-          isCompleted: state.task.isCompleted,
-          onToggle: notifier.toggleComplete,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _CategoryColorBar(color: state.task.category.color),
+              const SizedBox(height: 16),
+              _EditableTextField(
+                controller: _titleController,
+                isEditing: state.isEditing,
+                value: state.task.title,
+                hint: 'Task name',
+                style: AppTextStyle.bold18,
+                onChanged: notifier.updateTitle,
+              ),
+              const SizedBox(height: 4),
+              _EditableTextField(
+                controller: _descriptionController,
+                isEditing: state.isEditing,
+                value: state.task.description,
+                hint: 'Task description...',
+                style: AppTextStyle.medium16.copyWith(
+                  color: AppColors.colorSteelBlue,
+                ),
+                onChanged: notifier.updateDescription,
+              ),
+              const Divider(
+                height: 30,
+                thickness: 1.5,
+                color: AppColors.colorSkyMist,
+              ),
+              Row(
+                children: [
+                  if (state.isEditing)
+                    DateTimeButtonWidget(
+                      title: 'Date',
+                      value: state.task.date,
+                      icon: Icons.calendar_month,
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2050),
+                        );
+                        if (picked != null) notifier.updateDate(picked);
+                      },
+                    )
+                  else
+                    _InfoRow(icon: Icons.calendar_month, text: state.task.date),
+                  const SizedBox(width: 20),
+                  if (state.isEditing)
+                    DateTimeButtonWidget(
+                      title: 'Time',
+                      value: state.task.time,
+                      icon: Icons.timer_outlined,
+                      onTap: () async {
+                        final picked = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        );
+                        if (picked != null) {
+                          notifier.updateTime(picked, context);
+                        }
+                      },
+                    )
+                  else
+                    _InfoRow(icon: Icons.timer_outlined, text: state.task.time),
+                ],
+              ),
+              const SizedBox(height: 20),
+              _CompletionToggle(
+                isEditing: state.isEditing,
+                isCompleted: state.task.isCompleted,
+                onToggle: notifier.toggleComplete,
+              ),
+            ],
+          ),
         ),
-      ],
+      ),
     );
   }
 }
@@ -211,7 +214,6 @@ class _EditableTextField extends StatelessWidget {
     required this.hint,
     required this.style,
     required this.onChanged,
-    this.maxLines = 1,
   });
 
   final TextEditingController controller;
@@ -219,7 +221,6 @@ class _EditableTextField extends StatelessWidget {
   final String value;
   final String hint;
   final TextStyle style;
-  final int maxLines;
   final ValueChanged<String> onChanged;
 
   @override
@@ -229,12 +230,16 @@ class _EditableTextField extends StatelessWidget {
         controller: controller,
         onChanged: onChanged,
         style: style,
-        maxLines: maxLines,
+        maxLines: null,
         keyboardType: TextInputType.multiline,
         decoration: InputDecoration(border: InputBorder.none, hintText: hint),
       );
     } else {
-      return SelectableText(value.isEmpty ? hint : value, style: style);
+      return TextWidget(
+        value.isEmpty ? hint : value,
+        style: style,
+        isSelectable: true,
+      );
     }
   }
 }
@@ -252,7 +257,7 @@ class _InfoRow extends StatelessWidget {
       children: [
         Icon(icon, color: AppColors.colorOceanBlue, size: 20),
         const SizedBox(width: 8),
-        Text(text, style: AppTextStyle.light14),
+        TextWidget(text, style: AppTextStyle.light14),
       ],
     );
   }
@@ -286,7 +291,7 @@ class _CompletionToggle extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        Text(
+        TextWidget(
           isCompleted ? 'Task completed' : 'In progress',
           style: AppTextStyle.light14,
         ),

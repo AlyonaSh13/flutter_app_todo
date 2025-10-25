@@ -24,9 +24,11 @@ class InkWellMaterialWidget extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               highlightColor: color != null ? Colors.transparent : null,
-              overlayColor: color != null ? WidgetStateProperty.all(color) : null,
+              overlayColor: color != null
+                  ? WidgetStateProperty.all(color)
+                  : null,
               borderRadius: borderRadius,
-              onTap: onTap ?? () {},
+              onTap: onTap,
             ),
           ),
         ),

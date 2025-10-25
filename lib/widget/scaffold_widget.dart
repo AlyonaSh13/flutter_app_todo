@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_todo/resources/themes/app_colors.dart';
 
-class AppScaffoldWidget extends StatelessWidget {
-  const AppScaffoldWidget({
+class ScaffoldWidget extends StatelessWidget {
+  const ScaffoldWidget({
     super.key,
     required this.body,
     this.bottomNavigationBar,

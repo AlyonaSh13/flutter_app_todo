@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_todo/domain/entities/enums/task_category.dart';
 import 'package:flutter_app_todo/resources/themes/app_text_style.dart';
+import 'package:flutter_app_todo/widget/text_widget.dart';
 
 class RadioWidget extends StatelessWidget {
   const RadioWidget({
@@ -30,7 +31,7 @@ class RadioWidget extends StatelessWidget {
           visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
           title: Transform.translate(
             offset: const Offset(-12, 0),
-            child: Text(
+            child: TextWidget(
               titleRadio,
               style: AppTextStyle.light14.copyWith(color: categoryColor),
             ),
