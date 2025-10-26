@@ -3,12 +3,12 @@ import 'package:flutter_app_todo/data/repository/task_repository.dart';
 import 'package:flutter_app_todo/domain/entities/task_domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final getTaskUseCaseProvider = Provider(
-  (ref) => GetTaskUseCase(ref.watch(taskRepositoryProvider)),
+final getTasksUseCaseProvider = Provider(
+  (ref) => GetTasksUseCase(ref.watch(taskRepositoryProvider)),
 );
 
-class GetTaskUseCase extends ExecuteUseCase<List<TaskDomain>> {
-  GetTaskUseCase(this._repository);
+class GetTasksUseCase extends ExecuteUseCase<List<TaskDomain>> {
+  GetTasksUseCase(this._repository);
 
   final TaskRepository _repository;
 

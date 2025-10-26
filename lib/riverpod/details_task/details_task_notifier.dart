@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app_todo/domain/usecases/task/get_task_by_id.dart';
+import 'package:flutter_app_todo/domain/usecases/task/get_task_by_id_usecase.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_app_todo/core/extensions/date_time_extension.dart';
 import 'package:flutter_app_todo/domain/entities/task_domain.dart';
@@ -35,7 +35,11 @@ class DetailsTaskVmParams extends Equatable {
 class DetailsTaskVm extends _$DetailsTaskVm {
   @override
   Future<DetailsTaskState> build(DetailsTaskVmParams params) async {
-    final task = await ref.read(getTasByIdUseCaseProvider).execute(params.id);
+    final task = await ref.read(getTaskByIdUseCaseProvider).execute(params.id);
+
+    if (task == null) {
+      return const DetailsTaskState(task: TaskDomain.empty(), isEditing: false);
+    }
     return DetailsTaskState(task: task, isEditing: false);
   }
 

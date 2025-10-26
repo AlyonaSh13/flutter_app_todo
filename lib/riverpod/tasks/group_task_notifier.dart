@@ -1,8 +1,8 @@
-import 'package:flutter_app_todo/domain/entities/task_domain.dart';
-import 'package:flutter_app_todo/domain/usecases/task/delete_task_usecase.dart';
-import 'package:flutter_app_todo/domain/usecases/task/get_task_usecase.dart';
-import 'package:flutter_app_todo/domain/usecases/task/update_task_usecase.dart';
+import 'package:flutter_app_todo/domain/usecases/task/delete_task_by_id_usecase.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_app_todo/domain/entities/task_domain.dart';
+import 'package:flutter_app_todo/domain/usecases/task/get_tasks_usecase.dart';
+import 'package:flutter_app_todo/domain/usecases/task/update_task_usecase.dart';
 
 part 'group_task_notifier.g.dart';
 
@@ -24,14 +24,14 @@ class GroupTaskState {
 class GroupTaskVm extends _$GroupTaskVm {
   @override
   Future<GroupTaskState> build() async {
-    final data = await ref.read(getTaskUseCaseProvider).execute();
+    final data = await ref.read(getTasksUseCaseProvider).execute();
     return GroupTaskState(tasks: data, selectedIndex: 0);
   }
 
   Future<void> loadTasks() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final tasks = await ref.read(getTaskUseCaseProvider).execute();
+      final tasks = await ref.read(getTasksUseCaseProvider).execute();
       return GroupTaskState(
         tasks: tasks,
         selectedIndex: state.requireValue.selectedIndex,
@@ -45,7 +45,7 @@ class GroupTaskVm extends _$GroupTaskVm {
   }
 
   Future<void> deleteTask(String id) async {
-    await ref.read(deleteTaskUseCaseProvider)(id);
+    await ref.read(deleteTaskByIdUseCaseProvider)(id);
     await loadTasks();
   }
 
