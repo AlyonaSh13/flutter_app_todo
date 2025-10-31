@@ -29,7 +29,7 @@ class DetailsTaskPage extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) {
         return Center(
-          child: TextWidget('Error: $e', style: AppTextStyle.regular14),
+          child: TextWidget('Error! $e', style: AppTextStyle.regular14),
         );
       },
       data: (data) => ScaffoldWidget(

@@ -106,7 +106,7 @@ class _HeaderSectionWidget extends StatelessWidget {
           builder: (context, ref, _) {
             return ButtonWidget(
               title: '+ New Task',
-              textStyle: AppTextStyle.light14.copyWith(
+              textStyle: AppTextStyle.regular14.copyWith(
                 color: AppColors.colorPureWhite,
               ),
               onPressed: () => _onPressed(context, ref),
@@ -189,7 +189,7 @@ class _CardTaskWidget extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) {
         return Center(
-          child: TextWidget('Error: $e', style: AppTextStyle.regular14),
+          child: TextWidget('Error! $e', style: AppTextStyle.regular14),
         );
       },
       data: (data) {
