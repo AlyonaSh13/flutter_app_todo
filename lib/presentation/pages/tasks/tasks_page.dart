@@ -7,15 +7,15 @@ import 'package:flutter_app_todo/presentation/common/show_modal/show_modal_new_t
 import 'package:flutter_app_todo/presentation/pages/tasks/tasks_router.dart';
 import 'package:flutter_app_todo/resources/themes/app_colors.dart';
 import 'package:flutter_app_todo/resources/themes/app_text_style.dart';
-import 'package:flutter_app_todo/riverpod/tasks/group_task_notifier.dart';
+import 'package:flutter_app_todo/riverpod/tasks/tasks_notifier.dart';
 import 'package:flutter_app_todo/widget/button/button_widget.dart';
 import 'package:flutter_app_todo/widget/button/filter_chips_widget.dart';
 import 'package:flutter_app_todo/widget/card/card_task_widget.dart';
 import 'package:flutter_app_todo/widget/scaffold_widget.dart';
 import 'package:flutter_app_todo/widget/text_widget.dart';
 
-class GroupTaskPage extends StatelessWidget {
-  const GroupTaskPage({super.key});
+class TasksPage extends StatelessWidget {
+  const TasksPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +32,19 @@ class GroupTaskPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.calendar_month,
-                    color: AppColors.colorSteelBlue,
-                  ),
+                Consumer(
+                  builder: (context, ref, child) {
+                    return IconButton(
+                      onPressed: () async {
+                        await context.push(GroupTaskRouter.calendarTask);
+                        await ref.read(tasksVmProvider.notifier).refresh();
+                      },
+                      icon: const Icon(
+                        Icons.calendar_month,
+                        color: AppColors.colorSteelBlue,
+                      ),
+                    );
+                  },
                 ),
                 IconButton(
                   onPressed: () {},
@@ -91,8 +98,7 @@ class _HeaderSectionWidget extends StatelessWidget {
     );
 
     if (result == true) {
-      ref.read(groupTaskVmProvider.notifier).selectFilter(1);
-      await ref.read(groupTaskVmProvider.notifier).loadTasks();
+      await ref.read(tasksVmProvider.notifier).refresh();
     }
   }
 
@@ -142,7 +148,7 @@ class _TaskFilterNavigation extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(groupTaskVmProvider);
+    final state = ref.watch(tasksVmProvider);
 
     return state.when(
       data: (data) => FilterChipsWidget(
@@ -160,7 +166,7 @@ class _TaskFilterNavigation extends ConsumerWidget {
         ],
         selectedIndex: data.selectedIndex,
         onSelected: (index) {
-          ref.read(groupTaskVmProvider.notifier).selectFilter(index);
+          ref.read(tasksVmProvider.notifier).selectFilter(index);
         },
       ),
       loading: () => const SizedBox.shrink(),
@@ -172,18 +178,9 @@ class _TaskFilterNavigation extends ConsumerWidget {
 class _CardTaskWidget extends ConsumerWidget {
   const _CardTaskWidget();
 
-  Future<void> _openEdit(
-    BuildContext context,
-    TaskDomain task,
-    WidgetRef ref,
-  ) async {
-    await context.push('${GroupTaskRouter.detailsTask}/${task.id}');
-    ref.read(groupTaskVmProvider.notifier).loadTasks();
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final taskVm = ref.watch(groupTaskVmProvider);
+    final taskVm = ref.watch(tasksVmProvider);
 
     return taskVm.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -221,14 +218,18 @@ class _CardTaskWidget extends ConsumerWidget {
               time: task.time,
               category: task.category,
               isCompleted: task.isCompleted,
-              onTapCard: () {
-                _openEdit(context, task, ref);
+              onTapCard: () async {
+                await context.push('${GroupTaskRouter.detailsTask}/${task.id}');
+                await ref.read(tasksVmProvider.notifier).refresh();
               },
-              onToggleComplete: () {
-                ref.read(groupTaskVmProvider.notifier).toggleComplete(task.id);
+              onToggleComplete: () async {
+                await ref
+                    .read(tasksVmProvider.notifier)
+                    .toggleComplete(task.id);
               },
-              onDelete: () =>
-                  ref.read(groupTaskVmProvider.notifier).deleteTask(task.id),
+              onDelete: () async {
+                await ref.read(tasksVmProvider.notifier).deleteById(task.id);
+              },
             );
           },
           separatorBuilder: (context, index) {

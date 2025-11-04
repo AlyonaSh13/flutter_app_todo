@@ -17,6 +17,7 @@ abstract class TaskRepository {
   Future<void> deleteTaskById({required String id});
   Future<List<TaskDomain>> getTasks();
   Future<TaskDomain?> getTaskById({required String id});
+  Future<List<TaskDomain>> getTasksByDate({required String date});
 }
 
 class DriftTaskRepositoryImpl implements TaskRepository {
@@ -102,5 +103,28 @@ class DriftTaskRepositoryImpl implements TaskRepository {
       ),
       isCompleted: task.isCompleted,
     );
+  }
+
+  @override
+  Future<List<TaskDomain>> getTasksByDate({required String date}) async {
+    final tasks = await _db.getTasksByDate(date);
+    return tasks
+        .map(
+          (t) => TaskDomain(
+            id: t.id,
+            title: t.title,
+            description: t.description,
+            category: TaskCategory.values.firstWhere(
+              (category) =>
+                  category.name.trim().toLowerCase() ==
+                  t.category.trim().toLowerCase(),
+              orElse: () => TaskCategory.none,
+            ),
+            date: t.date,
+            time: t.time,
+            isCompleted: t.isCompleted,
+          ),
+        )
+        .toList();
   }
 }
