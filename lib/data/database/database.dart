@@ -1,12 +1,8 @@
-import 'dart:developer';
-import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:flutter_app_todo/data/database/table_task.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_app_todo/data/database/connection/connection.dart'
     as impl;
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 part 'database.g.dart';
@@ -24,19 +20,22 @@ class AppDatabase extends _$AppDatabase {
     return db;
   });
 
-  static Future<void> deleteOldDatabase() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'db.sqlite'));
+  // static Future<void> deleteOldDatabase() async {
+  //   final dbFolder = await getApplicationDocumentsDirectory();
+  //   final file = File(p.join(dbFolder.path, 'db.sqlite'));
 
-    if (await file.exists()) {
-      await file.delete();
-      log('Drift database deleted');
-    }
-  }
+  //   if (await file.exists()) {
+  //     await file.delete();
+  //     log('Drift database deleted');
+  //   }
+  // }
 
   Future<List<Task>> getAllTasks() => select(tasks).get();
   Future<Task?> getTaskById(String id) =>
       (select(tasks)..where((t) => t.id.equals(id))).getSingleOrNull();
+  Future<List<Task>> getTasksByDate(String date) async {
+    return (select(tasks)..where((t) => t.date.equals(date))).get();
+  }
 
   Future<void> insertTask(TasksCompanion task) => into(tasks).insert(task);
   Future<void> updateTaskById(TasksCompanion task) =>

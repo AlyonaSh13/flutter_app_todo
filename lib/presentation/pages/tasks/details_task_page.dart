@@ -7,6 +7,7 @@ import 'package:flutter_app_todo/resources/themes/app_text_style.dart';
 import 'package:flutter_app_todo/widget/scaffold_widget.dart';
 import 'package:flutter_app_todo/widget/button/date_time_button_widget.dart';
 import 'package:flutter_app_todo/widget/ink_well_material_widget.dart';
+import 'package:go_router/go_router.dart';
 
 final detailsTaskPageDataProvider = Provider<String>(
   (ref) => throw Exception(),
@@ -44,8 +45,15 @@ class DetailsTaskPage extends ConsumerWidget {
                 data.isEditing ? Icons.save : Icons.edit,
                 color: AppColors.colorDeepBlue,
               ),
-              onPressed: () {
-                data.isEditing ? notifier.saveChanges() : notifier.toggleEdit();
+              onPressed: () async {
+                if (data.isEditing) {
+                  final updatedTask = await notifier.saveChanges();
+                  if (updatedTask != null && context.mounted) {
+                    context.pop(updatedTask);
+                  }
+                } else {
+                  notifier.toggleEdit();
+                }
               },
             ),
           ],
@@ -170,7 +178,10 @@ class _BodyWidgetState extends ConsumerState<_BodyWidget> {
                       },
                     )
                   else
-                    _InfoRow(icon: Icons.timer_outlined, text: state.task.time),
+                    _InfoRow(
+                      icon: Icons.timer_outlined,
+                      text: state.task.time.isEmpty ? 'hh:mm' : state.task.time,
+                    ),
                 ],
               ),
               const SizedBox(height: 20),

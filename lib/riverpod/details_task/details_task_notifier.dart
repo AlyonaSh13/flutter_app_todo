@@ -78,9 +78,10 @@ class DetailsTaskVm extends _$DetailsTaskVm {
     state = AsyncData(state.requireValue.copyWith(task: task));
   }
 
-  Future<void> saveChanges() async {
+  Future<TaskDomain?> saveChanges() async {
     final task = state.requireValue.task;
     await ref.read(updateTaskUseCaseProvider).call(task);
     state = AsyncData(state.requireValue.copyWith(isEditing: false));
+    return task;
   }
 }
