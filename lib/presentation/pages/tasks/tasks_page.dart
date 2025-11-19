@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_todo/core/utils/constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_app_todo/core/extensions/date_time_extension.dart';
@@ -22,10 +23,7 @@ class TasksPage extends StatelessWidget {
     return ScaffoldWidget(
       appBar: AppBar(
         backgroundColor: AppColors.colorSkyMist,
-        title: const TextWidget(
-          'Todo list',
-          style: TextStyle(color: AppColors.colorDeepBlue),
-        ),
+        title: const TextWidget('Todo list', style: TextStyle(color: AppColors.colorDeepBlue)),
         centerTitle: true,
         actions: [
           Padding(
@@ -36,22 +34,18 @@ class TasksPage extends StatelessWidget {
                   builder: (context, ref, child) {
                     return IconButton(
                       onPressed: () async {
-                        await context.push(GroupTaskRouter.calendarTask);
+                        await context.push(TaskRouter.calendarTask);
                         await ref.read(tasksVmProvider.notifier).refresh();
                       },
-                      icon: const Icon(
-                        Icons.calendar_month,
-                        color: AppColors.colorSteelBlue,
-                      ),
+                      icon: const Icon(Icons.calendar_month, color: AppColors.colorSteelBlue),
                     );
                   },
                 ),
                 IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.notifications_none,
-                    color: AppColors.colorSteelBlue,
-                  ),
+                  onPressed: () {
+                    context.push(TaskRouter.notificationSettings);
+                  },
+                  icon: const Icon(Icons.notifications_none, color: AppColors.colorSteelBlue),
                 ),
               ],
             ),
@@ -112,9 +106,7 @@ class _HeaderSectionWidget extends StatelessWidget {
           builder: (context, ref, _) {
             return ButtonWidget(
               title: '+ New Task',
-              textStyle: AppTextStyle.regular14.copyWith(
-                color: AppColors.colorPureWhite,
-              ),
+              textStyle: AppTextStyle.regular14.copyWith(color: AppColors.colorPureWhite),
               onPressed: () => _onPressed(context, ref),
               backgroundColor: AppColors.colorOceanBlue,
               foregroundColor: AppColors.colorPureWhite,
@@ -154,15 +146,9 @@ class _TaskFilterNavigation extends ConsumerWidget {
       data: (data) => FilterChipsWidget(
         items: const ['All', 'In progress', 'Completed'],
         gradients: const [
-          LinearGradient(
-            colors: [AppColors.colorOceanBlue, AppColors.colorSkyMist],
-          ),
-          LinearGradient(
-            colors: [AppColors.colorSoftOrange, AppColors.colorSoftRed],
-          ),
-          LinearGradient(
-            colors: [AppColors.colorSoftGreen, AppColors.colorMintGreen],
-          ),
+          LinearGradient(colors: [AppColors.colorOceanBlue, AppColors.colorSkyMist]),
+          LinearGradient(colors: [AppColors.colorSoftOrange, AppColors.colorSoftRed]),
+          LinearGradient(colors: [AppColors.colorSoftGreen, AppColors.colorMintGreen]),
         ],
         selectedIndex: data.selectedIndex,
         onSelected: (index) {
@@ -185,9 +171,7 @@ class _CardTaskWidget extends ConsumerWidget {
     return taskVm.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) {
-        return Center(
-          child: TextWidget('Error! $e', style: AppTextStyle.regular14),
-        );
+        return Center(child: TextWidget('Error! $e', style: AppTextStyle.regular14));
       },
       data: (data) {
         List<TaskDomain> tasks = data.tasks;
@@ -199,12 +183,7 @@ class _CardTaskWidget extends ConsumerWidget {
         }
 
         if (tasks.isEmpty) {
-          return const Center(
-            child: TextWidget(
-              'No tasks for the selected filter',
-              style: AppTextStyle.light14,
-            ),
-          );
+          return const Center(child: TextWidget('No tasks for the selected filter', style: AppTextStyle.light14));
         }
 
         return ListView.separated(
@@ -214,18 +193,16 @@ class _CardTaskWidget extends ConsumerWidget {
             return CardTaskWidget(
               title: task.title,
               description: task.description,
-              date: task.date,
-              time: task.time,
+              date: task.date ?? Constants.dayMonthYear,
+              time: task.time ?? Constants.hourMinute,
               category: task.category,
               isCompleted: task.isCompleted,
               onTapCard: () async {
-                await context.push('${GroupTaskRouter.detailsTask}/${task.id}');
+                await context.push('${TaskRouter.detailsTask}/${task.id}');
                 await ref.read(tasksVmProvider.notifier).refresh();
               },
               onToggleComplete: () async {
-                await ref
-                    .read(tasksVmProvider.notifier)
-                    .toggleComplete(task.id);
+                await ref.read(tasksVmProvider.notifier).toggleComplete(task.id);
               },
               onDelete: () async {
                 await ref.read(tasksVmProvider.notifier).deleteById(task.id);

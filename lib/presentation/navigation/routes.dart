@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 
 class Routes {
   static final GoRouter router = GoRouter(
-    initialLocation: GroupTaskRouter.initial,
-    routes: [...GroupTaskRouter.routes],
+    initialLocation: TaskRouter.initial,
+    routes: [...TaskRouter.routes],
     errorBuilder: (context, state) => const NotFoundPage(),
   );
 }

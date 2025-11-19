@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_todo/core/utils/constants.dart';
 import 'package:flutter_app_todo/riverpod/details_task/details_task_notifier.dart';
 import 'package:flutter_app_todo/widget/text_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,9 +10,7 @@ import 'package:flutter_app_todo/widget/button/date_time_button_widget.dart';
 import 'package:flutter_app_todo/widget/ink_well_material_widget.dart';
 import 'package:go_router/go_router.dart';
 
-final detailsTaskPageDataProvider = Provider<String>(
-  (ref) => throw Exception(),
-);
+final detailsTaskPageDataProvider = Provider<String>((ref) => throw Exception());
 
 class DetailsTaskPage extends ConsumerWidget {
   const DetailsTaskPage({super.key});
@@ -19,9 +18,7 @@ class DetailsTaskPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final taskIdProvider = ref.read(detailsTaskPageDataProvider);
-    final provider = detailsTaskVmProvider(
-      DetailsTaskVmParams(id: taskIdProvider),
-    );
+    final provider = detailsTaskVmProvider(DetailsTaskVmParams(id: taskIdProvider));
 
     final state = ref.watch(provider);
     final notifier = ref.read(provider.notifier);
@@ -29,9 +26,7 @@ class DetailsTaskPage extends ConsumerWidget {
     return state.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) {
-        return Center(
-          child: TextWidget('Error! $e', style: AppTextStyle.regular14),
-        );
+        return Center(child: TextWidget('Error! $e', style: AppTextStyle.regular14));
       },
       data: (data) => ScaffoldWidget(
         appBar: AppBar(
@@ -41,10 +36,7 @@ class DetailsTaskPage extends ConsumerWidget {
           iconTheme: const IconThemeData(color: AppColors.colorDeepBlue),
           actions: [
             IconButton(
-              icon: Icon(
-                data.isEditing ? Icons.save : Icons.edit,
-                color: AppColors.colorDeepBlue,
-              ),
+              icon: Icon(data.isEditing ? Icons.save : Icons.edit, color: AppColors.colorDeepBlue),
               onPressed: () async {
                 if (data.isEditing) {
                   final updatedTask = await notifier.saveChanges();
@@ -103,13 +95,7 @@ class _BodyWidgetState extends ConsumerState<_BodyWidget> {
         decoration: BoxDecoration(
           color: AppColors.colorPureWhite,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade300,
-              offset: const Offset(0, 2),
-              blurRadius: 6,
-            ),
-          ],
+          boxShadow: [BoxShadow(color: Colors.grey.shade300, offset: const Offset(0, 2), blurRadius: 6)],
         ),
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -132,22 +118,16 @@ class _BodyWidgetState extends ConsumerState<_BodyWidget> {
                 isEditing: state.isEditing,
                 value: state.task.description,
                 hint: 'Task description...',
-                style: AppTextStyle.medium16.copyWith(
-                  color: AppColors.colorSteelBlue,
-                ),
+                style: AppTextStyle.medium16.copyWith(color: AppColors.colorSteelBlue),
                 onChanged: notifier.updateDescription,
               ),
-              const Divider(
-                height: 30,
-                thickness: 1.5,
-                color: AppColors.colorSkyMist,
-              ),
+              const Divider(height: 30, thickness: 1.5, color: AppColors.colorSkyMist),
               Row(
                 children: [
                   if (state.isEditing)
                     DateTimeButtonWidget(
                       title: 'Date',
-                      value: state.task.date,
+                      value: state.task.date ?? Constants.dayMonthYear,
                       icon: Icons.calendar_month,
                       onTap: () async {
                         final picked = await showDatePicker(
@@ -160,28 +140,22 @@ class _BodyWidgetState extends ConsumerState<_BodyWidget> {
                       },
                     )
                   else
-                    _InfoRow(icon: Icons.calendar_month, text: state.task.date),
+                    _InfoRow(icon: Icons.calendar_month, text: state.task.date ?? Constants.dayMonthYear),
                   const SizedBox(width: 20),
                   if (state.isEditing)
                     DateTimeButtonWidget(
                       title: 'Time',
-                      value: state.task.time,
+                      value: state.task.time ?? Constants.hourMinute,
                       icon: Icons.timer_outlined,
                       onTap: () async {
-                        final picked = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                        );
+                        final picked = await showTimePicker(context: context, initialTime: TimeOfDay.now());
                         if (picked != null) {
                           notifier.updateTime(picked, context);
                         }
                       },
                     )
                   else
-                    _InfoRow(
-                      icon: Icons.timer_outlined,
-                      text: state.task.time.isEmpty ? 'hh:mm' : state.task.time,
-                    ),
+                    _InfoRow(icon: Icons.timer_outlined, text: state.task.time ?? Constants.hourMinute),
                 ],
               ),
               const SizedBox(height: 20),
@@ -208,10 +182,7 @@ class _CategoryColorBar extends StatelessWidget {
     return Container(
       height: 8,
       width: double.infinity,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(8),
-      ),
+      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(8)),
     );
   }
 }
@@ -246,11 +217,7 @@ class _EditableTextField extends StatelessWidget {
         decoration: InputDecoration(border: InputBorder.none, hintText: hint),
       );
     } else {
-      return TextWidget(
-        value.isEmpty ? hint : value,
-        style: style,
-        isSelectable: true,
-      );
+      return TextWidget(value.isEmpty ? hint : value, style: style, isSelectable: true);
     }
   }
 }
@@ -276,11 +243,7 @@ class _InfoRow extends StatelessWidget {
 
 /// “Completed” status switch widget
 class _CompletionToggle extends StatelessWidget {
-  const _CompletionToggle({
-    required this.isEditing,
-    required this.isCompleted,
-    required this.onToggle,
-  });
+  const _CompletionToggle({required this.isEditing, required this.isCompleted, required this.onToggle});
 
   final bool isEditing;
   final bool isCompleted;
@@ -294,18 +257,13 @@ class _CompletionToggle extends StatelessWidget {
           borderRadius: BorderRadius.circular(100),
           onTap: isEditing ? onToggle : null,
           child: Icon(
-            isCompleted
-                ? Icons.check_circle_outline
-                : Icons.radio_button_unchecked,
+            isCompleted ? Icons.check_circle_outline : Icons.radio_button_unchecked,
             color: AppColors.colorMintGreen,
             size: 22,
           ),
         ),
         const SizedBox(width: 8),
-        TextWidget(
-          isCompleted ? 'Task completed' : 'In progress',
-          style: AppTextStyle.light14,
-        ),
+        TextWidget(isCompleted ? 'Task completed' : 'In progress', style: AppTextStyle.light14),
       ],
     );
   }

@@ -22,16 +22,21 @@ class ShowModalNewTaskWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, _) {
-        ref.listen(creationTaskVmProvider, (previous, next) {
-          if (next.isSuccess) {
-            context.pop(true);
-          }
-        });
-
-        return const _ShowModalNewTaskWidget();
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
       },
+      child: Consumer(
+        builder: (context, ref, _) {
+          ref.listen(creationTaskVmProvider, (previous, next) {
+            if (next.isSuccess) {
+              context.pop(true);
+            }
+          });
+
+          return const _ShowModalNewTaskWidget();
+        },
+      ),
     );
   }
 }
@@ -40,12 +45,10 @@ class _ShowModalNewTaskWidget extends ConsumerStatefulWidget {
   const _ShowModalNewTaskWidget();
 
   @override
-  ConsumerState<_ShowModalNewTaskWidget> createState() =>
-      _ShowModalNewTaskWidgetState();
+  ConsumerState<_ShowModalNewTaskWidget> createState() => _ShowModalNewTaskWidgetState();
 }
 
-class _ShowModalNewTaskWidgetState
-    extends ConsumerState<_ShowModalNewTaskWidget> {
+class _ShowModalNewTaskWidgetState extends ConsumerState<_ShowModalNewTaskWidget> {
   final _titleController = TextEditingController();
   final _titleScrollController = ScrollController();
   final _descriptionController = TextEditingController();
@@ -94,11 +97,7 @@ class _ShowModalNewTaskWidgetState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Center(
-                child: TextWidget(
-                  'New Task Todo',
-                  style: AppTextStyle.bold18,
-                  textAlign: TextAlign.center,
-                ),
+                child: TextWidget('New Task Todo', style: AppTextStyle.bold18, textAlign: TextAlign.center),
               ),
               const Divider(thickness: 1.2, color: AppColors.colorSkyMist),
               const SizedBox(height: 12),
@@ -140,15 +139,13 @@ class _ShowModalNewTaskWidgetState
                 selectedRadio: notifierState.task.category,
                 onChanged: (taskCategory) {
                   if (taskCategory == null) return;
-                  notifier.updateTask(
-                    notifierState.task.copyWith(category: taskCategory),
-                  );
+                  notifier.updateTask(notifierState.task.copyWith(category: taskCategory));
                 },
               ),
               const SizedBox(height: 12),
               _RowDateTimeButtonsWidget(
-                date: notifierState.task.date,
-                time: notifierState.task.time,
+                date: notifierState.task.date ?? Constants.dayMonthYear,
+                time: notifierState.task.time ?? Constants.hourMinute,
                 onChangedDate: (value) => notifier.updateDate(value),
                 onChangedTime: (value) => notifier.updateTime(value),
               ),
@@ -159,8 +156,8 @@ class _ShowModalNewTaskWidgetState
                 titleController: _titleController,
                 descriptionController: _descriptionController,
                 selectedRadio: notifierState.task.category,
-                date: notifierState.task.date,
-                time: notifierState.task.time,
+                date: notifierState.task.date ?? Constants.dayMonthYear,
+                time: notifierState.task.time ?? Constants.hourMinute,
               ),
             ],
           ),
@@ -171,19 +168,14 @@ class _ShowModalNewTaskWidgetState
 }
 
 class _RadioGroupWidget extends StatelessWidget {
-  const _RadioGroupWidget({
-    required this.selectedRadio,
-    required this.onChanged,
-  });
+  const _RadioGroupWidget({required this.selectedRadio, required this.onChanged});
 
   final TaskCategory selectedRadio;
   final void Function(TaskCategory? taskCategory) onChanged;
 
   @override
   Widget build(BuildContext context) {
-    final values = TaskCategory.values
-        .where((e) => e != TaskCategory.none)
-        .toList();
+    final values = TaskCategory.values.where((e) => e != TaskCategory.none).toList();
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -239,27 +231,17 @@ class _RowDateTimeButtonsWidget extends ConsumerWidget {
 
   Future<void> _pickTime(BuildContext context) async {
     if (date.isEmpty) {
-      await DialogHelper.showInfoDialog(
-        context,
-        message: 'Please select a date first',
-      );
+      await DialogHelper.showInfoDialog(context, message: 'Please select a date first');
       return;
     }
 
     final now = DateTime.now();
-    final selectedDate =
-        DateFormat(DateFormats.dayMonthYear).tryParse(date) ?? now;
+    final selectedDate = DateFormat(Constants.dayMonthYear).tryParse(date) ?? now;
 
-    final timeResult = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
+    final timeResult = await showTimePicker(context: context, initialTime: TimeOfDay.now());
 
     if (timeResult != null) {
-      final isSameDay =
-          selectedDate.year == now.year &&
-          selectedDate.month == now.month &&
-          selectedDate.day == now.day;
+      final isSameDay = selectedDate.year == now.year && selectedDate.month == now.month && selectedDate.day == now.day;
 
       final selectedDateTime = DateTime(
         selectedDate.year,
@@ -270,10 +252,7 @@ class _RowDateTimeButtonsWidget extends ConsumerWidget {
       );
 
       if (isSameDay && selectedDateTime.isBefore(now)) {
-        await DialogHelper.showInfoDialog(
-          context,
-          message: 'Select a future time',
-        );
+        await DialogHelper.showInfoDialog(context, message: 'Select a future time');
         return;
       }
 
@@ -286,19 +265,9 @@ class _RowDateTimeButtonsWidget extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        DateTimeButtonWidget(
-          title: 'Date',
-          value: date,
-          icon: Icons.calendar_month,
-          onTap: () => _pickDate(context),
-        ),
+        DateTimeButtonWidget(title: 'Date', value: date, icon: Icons.calendar_month, onTap: () => _pickDate(context)),
         const SizedBox(width: 22),
-        DateTimeButtonWidget(
-          title: 'Time',
-          value: time,
-          icon: Icons.timer_outlined,
-          onTap: () => _pickTime(context),
-        ),
+        DateTimeButtonWidget(title: 'Time', value: time, icon: Icons.timer_outlined, onTap: () => _pickTime(context)),
       ],
     );
   }
@@ -323,10 +292,7 @@ class _RowButtonsWidget extends ConsumerWidget {
   final GlobalKey<FormState> formKey;
   final FocusNode titleFocusNode;
 
-  Future<void> _validateAndCreateTask(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
+  Future<void> _validateAndCreateTask(BuildContext context, WidgetRef ref) async {
     if (!_isFormValid(formKey, titleFocusNode)) return;
 
     final now = DateTime.now();
@@ -352,15 +318,10 @@ class _RowButtonsWidget extends ConsumerWidget {
     return isValid;
   }
 
-  Future<bool> _isDateTimeValid(
-    BuildContext context,
-    String date,
-    String time,
-    DateTime now,
-  ) async {
+  Future<bool> _isDateTimeValid(BuildContext context, String date, String time, DateTime now) async {
     if (date.isEmpty || time.isEmpty) return true;
 
-    final selectedDate = DateFormat(DateFormats.dayMonthYear).tryParse(date);
+    final selectedDate = DateFormat(Constants.dayMonthYear).tryParse(date);
     if (selectedDate == null) return true;
 
     try {
@@ -374,17 +335,11 @@ class _RowButtonsWidget extends ConsumerWidget {
           selectedDateTime.minute == now.minute;
 
       if (sameMinute) {
-        await DialogHelper.showInfoDialog(
-          context,
-          message: 'Selected time cannot be the same as the current time',
-        );
+        await DialogHelper.showInfoDialog(context, message: 'Selected time cannot be the same as the current time');
         return false;
       }
     } catch (_) {
-      await DialogHelper.showInfoDialog(
-        context,
-        message: 'Invalid time format',
-      );
+      await DialogHelper.showInfoDialog(context, message: 'Invalid time format');
       return false;
     }
     return true;
@@ -423,9 +378,7 @@ class _RowButtonsWidget extends ConsumerWidget {
         Expanded(
           child: ButtonWidget(
             title: 'Create',
-            textStyle: AppTextStyle.light14.copyWith(
-              color: AppColors.colorPureWhite,
-            ),
+            textStyle: AppTextStyle.light14.copyWith(color: AppColors.colorPureWhite),
             onPressed: () => _validateAndCreateTask(context, ref),
             backgroundColor: AppColors.colorOceanBlue,
             foregroundColor: AppColors.colorPureWhite,
