@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_todo/domain/usecases/notification/load_settings_usecase.dart';
 import 'package:flutter_app_todo/domain/usecases/task/get_task_by_id_usecase.dart';
+import 'package:flutter_app_todo/domain/usecases/task/schedule_task_reminder_usecase.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_app_todo/core/extensions/date_time_extension.dart';
 import 'package:flutter_app_todo/domain/entities/task_domain.dart';
@@ -15,10 +17,7 @@ class DetailsTaskState {
   final bool isEditing;
 
   DetailsTaskState copyWith({TaskDomain? task, bool? isEditing}) {
-    return DetailsTaskState(
-      task: task ?? this.task,
-      isEditing: isEditing ?? this.isEditing,
-    );
+    return DetailsTaskState(task: task ?? this.task, isEditing: isEditing ?? this.isEditing);
   }
 }
 
@@ -44,9 +43,7 @@ class DetailsTaskVm extends _$DetailsTaskVm {
   }
 
   void toggleEdit() {
-    state = AsyncData(
-      state.requireValue.copyWith(isEditing: !state.requireValue.isEditing),
-    );
+    state = AsyncData(state.requireValue.copyWith(isEditing: !state.requireValue.isEditing));
   }
 
   void updateTitle(String title) {
@@ -60,9 +57,7 @@ class DetailsTaskVm extends _$DetailsTaskVm {
   }
 
   void updateDate(DateTime date) {
-    final task = state.requireValue.task.copyWith(
-      date: date.formatDayMonthYear(),
-    );
+    final task = state.requireValue.task.copyWith(date: date.formatDayMonthYear());
     state = AsyncData(state.requireValue.copyWith(task: task));
   }
 
@@ -72,15 +67,21 @@ class DetailsTaskVm extends _$DetailsTaskVm {
   }
 
   void toggleComplete() {
-    final task = state.requireValue.task.copyWith(
-      isCompleted: !state.requireValue.task.isCompleted,
-    );
+    final task = state.requireValue.task.copyWith(isCompleted: !state.requireValue.task.isCompleted);
     state = AsyncData(state.requireValue.copyWith(task: task));
   }
 
   Future<TaskDomain?> saveChanges() async {
     final task = state.requireValue.task;
     await ref.read(updateTaskUseCaseProvider).call(task);
+
+    final result = await ref.read(loadNotificationSettingsUseCaseProvider).execute();
+    final canScheduleTask = task.date.toDateTimeDMY() != null;
+
+    if (result.enabled && canScheduleTask) {
+      await ref.read(scheduleTaskReminderUseCaseProvider).call(task);
+    }
+
     state = AsyncData(state.requireValue.copyWith(isEditing: false));
     return task;
   }

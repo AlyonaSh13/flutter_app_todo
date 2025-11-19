@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_todo/core/utils/constants.dart';
 import 'package:flutter_app_todo/domain/entities/task_domain.dart';
 import 'package:flutter_app_todo/presentation/common/show_modal/show_modal_new_task_widget.dart';
 import 'package:flutter_app_todo/presentation/pages/tasks/tasks_router.dart';
@@ -46,6 +47,7 @@ class CalendarTaskPage extends ConsumerWidget {
         title: const TextWidget('Calendar', style: AppTextStyle.bold18),
         centerTitle: true,
         backgroundColor: AppColors.colorSkyMist,
+        iconTheme: const IconThemeData(color: AppColors.colorDeepBlue),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _onPressed(context, ref),
@@ -54,9 +56,7 @@ class CalendarTaskPage extends ConsumerWidget {
       ),
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(
-          child: TextWidget('Error! $error', style: AppTextStyle.regular14),
-        ),
+        error: (error, _) => Center(child: TextWidget('Error! $error', style: AppTextStyle.regular14)),
         data: (data) => _CalendarTaskBody(state: data, notifier: notifier),
       ),
     );
@@ -81,7 +81,7 @@ class _CalendarTaskBodyState extends ConsumerState<_CalendarTaskBody> {
     final tasks = widget.state.tasks;
 
     return Padding(
-      padding: const EdgeInsetsGeometry.only(left: 20, right: 20, bottom: 20),
+      padding: const EdgeInsetsGeometry.only(left: 12, right: 12, bottom: 20),
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -93,9 +93,7 @@ class _CalendarTaskBodyState extends ConsumerState<_CalendarTaskBody> {
               onDaySelected: widget.notifier.selectDate,
             ),
           ),
-          tasks.isEmpty
-              ? const _EmptyTaskWidget()
-              : _TaskListWidget(tasks: tasks),
+          tasks.isEmpty ? const _EmptyTaskWidget() : _TaskListWidget(tasks: tasks),
         ],
       ),
     );
@@ -111,10 +109,7 @@ class _EmptyTaskWidget extends StatelessWidget {
       child: Center(
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 30),
-          child: TextWidget(
-            'No tasks for this date',
-            style: AppTextStyle.light14,
-          ),
+          child: TextWidget('No tasks for this date', style: AppTextStyle.light14),
         ),
       ),
     );
@@ -136,14 +131,12 @@ class _TaskListWidget extends ConsumerWidget {
         return CardTaskWidget(
           title: task.title,
           description: task.description,
-          date: task.date,
-          time: task.time,
+          date: task.date ?? Constants.dayMonthYear,
+          time: task.time ?? Constants.hourMinute,
           category: task.category,
           isCompleted: task.isCompleted,
           onTapCard: () async {
-            await context.push<TaskDomain>(
-              '${GroupTaskRouter.detailsTask}/${task.id}',
-            );
+            await context.push<TaskDomain>('${TaskRouter.detailsTask}/${task.id}');
           },
           onToggleComplete: () {
             ref.read(tasksVmProvider.notifier).toggleComplete(task.id);

@@ -31,115 +31,102 @@ class CardTaskWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.colorPureWhite,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        splashColor: AppColors.colorMintGreen.withValues(alpha: 0.2),
-        highlightColor: AppColors.colorMintGreen.withValues(alpha: 0.1),
-        onTap: onTapCard,
-        child: Container(
-          width: double.infinity,
-          height: 120,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: AppColors.colorPureWhite,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.colorOceanBlue.withValues(alpha: 0.15),
-                blurRadius: 12,
-                spreadRadius: 1,
-                offset: const Offset(0, 6),
-              ),
-              BoxShadow(
-                color: AppColors.colorSkyMist.withValues(alpha: 0.3),
-                blurRadius: 16,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Stack(
-            children: [
-              Row(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: AppColors.colorPureWhite,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.colorOceanBlue.withValues(alpha: 0.15),
+              blurRadius: 12,
+              spreadRadius: 1,
+              offset: const Offset(0, 6),
+            ),
+            BoxShadow(color: AppColors.colorSkyMist.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 2)),
+          ],
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          splashColor: AppColors.colorMintGreen.withValues(alpha: 0.2),
+          highlightColor: AppColors.colorMintGreen.withValues(alpha: 0.1),
+          onTap: onTapCard,
+
+          child: SizedBox(
+            height: 120,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Stack(
                 children: [
-                  Container(
-                    width: 20,
-                    decoration: BoxDecoration(
-                      color: category.color,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        bottomLeft: Radius.circular(12),
+                  Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        decoration: BoxDecoration(
+                          color: category.color,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(12),
+                            bottomLeft: Radius.circular(12),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 12,
-                        right: 40,
-                        top: 12,
-                        bottom: 14,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          TextWidget(
-                            title,
-                            style: AppTextStyle.bold18,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          TextWidget(
-                            description,
-                            style: AppTextStyle.medium16.copyWith(
-                              color: AppColors.colorSteelBlue,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const Divider(
-                            thickness: 1.5,
-                            color: AppColors.colorSkyMist,
-                          ),
-                          Row(
+
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 12, right: 40, top: 12, bottom: 14),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextWidget(date, style: AppTextStyle.light14),
-                              const SizedBox(width: 12),
-                              TextWidget(time, style: AppTextStyle.light14),
+                              TextWidget(
+                                title,
+                                style: AppTextStyle.bold18,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              TextWidget(
+                                description,
+                                style: AppTextStyle.medium16.copyWith(color: AppColors.colorSteelBlue),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const Divider(thickness: 1.5, color: AppColors.colorSkyMist),
+                              Row(
+                                children: [
+                                  TextWidget(date, style: AppTextStyle.light14),
+                                  const SizedBox(width: 12),
+                                  TextWidget(time, style: AppTextStyle.light14),
+                                ],
+                              ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
+                    ],
+                  ),
+
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: IconButton(
+                      icon: Icon(isCompleted ? Icons.check_circle_outline : Icons.radio_button_unchecked),
+                      color: AppColors.colorMintGreen,
+                      onPressed: onToggleComplete,
+                    ),
+                  ),
+
+                  Positioned(
+                    bottom: 4,
+                    right: 4,
+                    child: IconButton(
+                      icon: const Icon(Icons.delete_outline),
+                      color: AppColors.colorSoftRed,
+                      onPressed: onDelete,
                     ),
                   ),
                 ],
               ),
-
-              Positioned(
-                top: 4,
-                right: 4,
-                child: IconButton(
-                  icon: Icon(
-                    isCompleted
-                        ? Icons.check_circle_outline
-                        : Icons.radio_button_unchecked,
-                  ),
-                  color: AppColors.colorMintGreen,
-                  onPressed: onToggleComplete,
-                ),
-              ),
-
-              Positioned(
-                bottom: 4,
-                right: 4,
-                child: IconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  color: AppColors.colorSoftRed,
-                  onPressed: onDelete,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

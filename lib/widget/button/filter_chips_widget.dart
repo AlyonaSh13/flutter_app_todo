@@ -27,9 +27,7 @@ class FilterChipsWidget extends StatelessWidget {
         final isSelected = selectedIndex == index;
         final gradient = gradients != null && gradients!.length > index
             ? gradients![index]
-            : const LinearGradient(
-                colors: [AppColors.colorOceanBlue, AppColors.colorSkyMist],
-              );
+            : const LinearGradient(colors: [AppColors.colorOceanBlue, AppColors.colorSkyMist]);
 
         return GestureDetector(
           onTap: () => onSelected(index),
@@ -38,7 +36,7 @@ class FilterChipsWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               gradient: isSelected ? gradient : null,
-              color: isSelected ? null : Colors.grey.shade200,
+              color: isSelected ? null : AppColors.colorLightGray,
               borderRadius: BorderRadius.circular(18),
               boxShadow: isSelected
                   ? [
@@ -54,9 +52,7 @@ class FilterChipsWidget extends StatelessWidget {
               items[index],
               style: isSelected
                   ? AppTextStyle.medium14
-                  : AppTextStyle.medium14.copyWith(
-                      color: AppColors.colorSteelBlue,
-                    ),
+                  : AppTextStyle.medium14.copyWith(color: AppColors.colorSteelBlue),
             ),
           ),
         );

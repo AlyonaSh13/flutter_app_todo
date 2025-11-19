@@ -11,4 +11,5 @@ class AppColors {
   static const colorSoftGreen = Color(0xFF81C784);
   static const colorSoftOrange = Color(0xFFFFB74D);
   static const colorMintGreen = Color(0xFFB2DFDB);
+  static const colorLightGray = Color(0xFFEEEEEE);
 }

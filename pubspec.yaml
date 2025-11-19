@@ -55,6 +55,14 @@ dependencies:
 
   table_calendar: ^3.2.0
 
+  flutter_local_notifications: ^19.5.0
+  timezone: ^0.10.1
+  flutter_timezone: ^5.0.0
+  permission_handler: ^11.3.0
+  shared_preferences: ^2.5.3
+  rxdart: ^0.28.0
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
