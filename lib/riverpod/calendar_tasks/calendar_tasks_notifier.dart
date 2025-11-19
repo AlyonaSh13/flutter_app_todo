@@ -8,20 +8,12 @@ import 'package:flutter_app_todo/domain/usecases/task/get_tasks_usecase.dart';
 part 'calendar_tasks_notifier.g.dart';
 
 class CalendarTasksState {
-  const CalendarTasksState({
-    required this.selectedDate,
-    required this.tasks,
-    required this.calendarMap,
-  });
+  const CalendarTasksState({required this.selectedDate, required this.tasks, required this.calendarMap});
   final DateTime selectedDate;
   final List<TaskDomain> tasks;
   final Map<String, int> calendarMap;
 
-  CalendarTasksState copyWith({
-    DateTime? selectedDate,
-    List<TaskDomain>? tasks,
-    Map<String, int>? calendarMap,
-  }) {
+  CalendarTasksState copyWith({DateTime? selectedDate, List<TaskDomain>? tasks, Map<String, int>? calendarMap}) {
     return CalendarTasksState(
       selectedDate: selectedDate ?? this.selectedDate,
       tasks: tasks ?? this.tasks,
@@ -33,14 +25,13 @@ class CalendarTasksState {
 @riverpod
 class CalendarTasksVm extends _$CalendarTasksVm {
   GetTasksUseCase get _getAll => ref.read(getTasksUseCaseProvider);
-  GetTasksByDateUseCase get _getByDate =>
-      ref.read(getTasksByDateUseCaseProvider);
+  GetTasksByDateUseCase get _getByDate => ref.read(getTasksByDateUseCaseProvider);
 
   @override
   Future<CalendarTasksState> build() async {
     final now = DateTime.now();
 
-    final tasksByDate = await _getByDate.execute(now.formatDayMonthYear());
+    final tasksByDate = await _getByDate.call(now.formatDayMonthYear());
 
     final allTasks = await _getAll.execute();
     final calendarMap = <String, int>{};
@@ -52,11 +43,7 @@ class CalendarTasksVm extends _$CalendarTasksVm {
       calendarMap[formatted] = (calendarMap[formatted] ?? 0) + 1;
     }
 
-    return CalendarTasksState(
-      calendarMap: calendarMap,
-      selectedDate: now,
-      tasks: tasksByDate,
-    );
+    return CalendarTasksState(calendarMap: calendarMap, selectedDate: now, tasks: tasksByDate);
   }
 
   Future<void> selectDate(DateTime date) async {
@@ -68,9 +55,7 @@ class CalendarTasksVm extends _$CalendarTasksVm {
   Future<void> refresh() async {
     final currentState = state.requireValue;
 
-    final tasksByDate = await _getByDate.execute(
-      currentState.selectedDate.formatDayMonthYear(),
-    );
+    final tasksByDate = await _getByDate.call(currentState.selectedDate.formatDayMonthYear());
 
     final allTasks = await _getAll.execute();
     final calendarMap = <String, int>{};
@@ -82,8 +67,6 @@ class CalendarTasksVm extends _$CalendarTasksVm {
       calendarMap[formatted] = (calendarMap[formatted] ?? 0) + 1;
     }
 
-    state = AsyncValue.data(
-      currentState.copyWith(calendarMap: calendarMap, tasks: tasksByDate),
-    );
+    state = AsyncValue.data(currentState.copyWith(calendarMap: calendarMap, tasks: tasksByDate));
   }
 }

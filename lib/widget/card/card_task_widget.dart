@@ -34,17 +34,23 @@ class CardTaskWidget extends StatelessWidget {
       color: Colors.transparent,
       child: Ink(
         decoration: BoxDecoration(
-          color: AppColors.colorPureWhite,
+          color: isCompleted ? AppColors.colorLightGray.withValues(alpha: 0.3) : AppColors.colorPureWhite,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.colorOceanBlue.withValues(alpha: 0.15),
-              blurRadius: 12,
-              spreadRadius: 1,
-              offset: const Offset(0, 6),
-            ),
-            BoxShadow(color: AppColors.colorSkyMist.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 2)),
-          ],
+          boxShadow: isCompleted
+              ? []
+              : [
+                  BoxShadow(
+                    color: AppColors.colorOceanBlue.withValues(alpha: 0.15),
+                    blurRadius: 12,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 6),
+                  ),
+                  BoxShadow(
+                    color: AppColors.colorSkyMist.withValues(alpha: 0.3),
+                    blurRadius: 16,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
@@ -63,7 +69,7 @@ class CardTaskWidget extends StatelessWidget {
                       Container(
                         width: 20,
                         decoration: BoxDecoration(
-                          color: category.color,
+                          color: isCompleted ? category.color.withValues(alpha: 0.35) : category.color,
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(12),
                             bottomLeft: Radius.circular(12),

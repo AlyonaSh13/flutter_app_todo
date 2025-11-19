@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_todo/core/utils/constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,12 +42,13 @@ class TasksPage extends StatelessWidget {
                     );
                   },
                 ),
-                IconButton(
-                  onPressed: () {
-                    context.push(TaskRouter.notificationSettings);
-                  },
-                  icon: const Icon(Icons.notifications_none, color: AppColors.colorSteelBlue),
-                ),
+                if (!kIsWeb)
+                  IconButton(
+                    onPressed: () {
+                      context.push(TaskRouter.notificationSettings);
+                    },
+                    icon: const Icon(Icons.notifications_none, color: AppColors.colorSteelBlue),
+                  ),
               ],
             ),
           ),
@@ -88,6 +90,7 @@ class _HeaderSectionWidget extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      useSafeArea: true,
       builder: (context) => const ShowModalNewTaskWidget(),
     );
 

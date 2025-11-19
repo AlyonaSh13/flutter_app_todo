@@ -1,8 +1,9 @@
 import 'package:flutter_app_todo/core/usecase/usecase.dart';
-import 'package:flutter_app_todo/data/repository/notification_repository.dart';
+import 'package:flutter_app_todo/data/repository/notification_repository_impl.dart';
+import 'package:flutter_app_todo/domain/repository/notification_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final setEveningTimeUseCaseProvider = Provider(
+final setEveningTimeUseCaseProvider = Provider<SetEveningTimeUseCase>(
   (ref) => SetEveningTimeUseCase(ref.watch(notificationRepositoryProvider)),
 );
 
