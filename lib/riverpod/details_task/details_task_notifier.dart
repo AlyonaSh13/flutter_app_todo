@@ -34,7 +34,7 @@ class DetailsTaskVmParams extends Equatable {
 class DetailsTaskVm extends _$DetailsTaskVm {
   @override
   Future<DetailsTaskState> build(DetailsTaskVmParams params) async {
-    final task = await ref.read(getTaskByIdUseCaseProvider).execute(params.id);
+    final task = await ref.read(getTaskByIdUseCaseProvider).call(params.id);
 
     if (task == null) {
       return const DetailsTaskState(task: TaskDomain.empty(), isEditing: false);

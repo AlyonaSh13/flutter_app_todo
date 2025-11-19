@@ -6,3 +6,8 @@ class Constants {
   static const String advanceId = 'advance';
   static const String exactId = 'exact';
 }
+
+class NotificationConstants {
+  static const int morningNotification = 2001;
+  static const int eveningNotification = 2002;
+}

@@ -1,17 +1,18 @@
 import 'dart:developer';
 
 import 'package:flutter_app_todo/core/usecase/usecase.dart';
-import 'package:flutter_app_todo/data/repository/notification_repository.dart';
+import 'package:flutter_app_todo/data/repository/notification_repository_impl.dart';
+import 'package:flutter_app_todo/domain/repository/notification_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final restoreDailyNotificationsUseCaseProvider = Provider<RestoreDailyNotificationsUseCase>((ref) {
-  return RestoreDailyNotificationsUseCase(ref.read(notificationStartupRepositoryProvider));
+  return RestoreDailyNotificationsUseCase(ref.read(notificationRepositoryProvider));
 });
 
 class RestoreDailyNotificationsUseCase extends ExecuteUseCase<void> {
   RestoreDailyNotificationsUseCase(this._repository);
 
-  final NotificationStartupRepository _repository;
+  final NotificationRepository _repository;
 
   @override
   Future<void> execute() async {

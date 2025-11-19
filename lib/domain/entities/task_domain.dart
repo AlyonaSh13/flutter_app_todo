@@ -1,4 +1,7 @@
+import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_app_todo/core/extensions/string_to_drift_extension.dart';
+import 'package:flutter_app_todo/data/database/database.dart';
 import 'package:flutter_app_todo/domain/entities/enums/task_category.dart';
 
 class TaskDomain extends Equatable {
@@ -53,6 +56,16 @@ class TaskDomain extends Equatable {
       isCompleted: isCompleted ?? this.isCompleted,
     );
   }
+
+  TasksCompanion toBody() => TasksCompanion(
+    id: id.isEmpty ? const Value.absent() : id.toDriftValue(),
+    title: title.toDriftValue(),
+    description: description.toDriftValue(),
+    date: date.toDriftValue(),
+    time: time.toDriftValue(),
+    category: category.name.toDriftValue(),
+    isCompleted: Value(isCompleted),
+  );
 
   @override
   List<Object?> get props => [id, title, description, date, time, category, isCompleted];

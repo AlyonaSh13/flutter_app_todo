@@ -13,21 +13,10 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(DatabaseConnection super.connection);
 
   static final provider = Provider<AppDatabase>((ref) {
-    //AppDatabase.deleteOldDatabase();
     final db = impl.constructDb();
     ref.onDispose(() => db.close());
     return db;
   });
-
-  // static Future<void> deleteOldDatabase() async {
-  //   final dbFolder = await getApplicationDocumentsDirectory();
-  //   final file = File(p.join(dbFolder.path, 'db.sqlite'));
-
-  //   if (await file.exists()) {
-  //     await file.delete();
-  //     log('Drift database deleted');
-  //   }
-  // }
 
   Future<List<Task>> getAllTasks() => select(tasks).get();
   Future<Task?> getTaskById(String id) => (select(tasks)..where((t) => t.id.equals(id))).getSingleOrNull();

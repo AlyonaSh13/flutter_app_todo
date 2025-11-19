@@ -80,17 +80,16 @@ class _ShowModalNewTaskWidgetState extends ConsumerState<_ShowModalNewTaskWidget
   Widget build(BuildContext context) {
     final notifierState = ref.watch(creationTaskVmProvider);
     final notifier = ref.read(creationTaskVmProvider.notifier);
-    final height = MediaQuery.of(context).size.height * 0.85;
+    final viewInsetsBottom = MediaQuery.viewInsetsOf(context).bottom;
 
     return Container(
-      padding: const EdgeInsets.all(20),
-      height: height,
       width: double.infinity,
       decoration: const BoxDecoration(
         color: AppColors.colorSnowWhite,
         borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
       ),
       child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20).copyWith(bottom: 20 + viewInsetsBottom),
         child: Form(
           key: _formKey,
           child: Column(
@@ -295,9 +294,6 @@ class _RowButtonsWidget extends ConsumerWidget {
   Future<void> _validateAndCreateTask(BuildContext context, WidgetRef ref) async {
     if (!_isFormValid(formKey, titleFocusNode)) return;
 
-    final now = DateTime.now();
-    if (!await _isDateTimeValid(context, date, time, now)) return;
-
     FocusScope.of(context).unfocus();
 
     final newTask = TaskDomain.empty(
@@ -316,48 +312,6 @@ class _RowButtonsWidget extends ConsumerWidget {
     final isValid = formState?.validate() ?? false;
     if (!isValid) focusNode.requestFocus();
     return isValid;
-  }
-
-  Future<bool> _isDateTimeValid(BuildContext context, String date, String time, DateTime now) async {
-    if (date.isEmpty || time.isEmpty) return true;
-
-    final selectedDate = DateFormat(Constants.dayMonthYear).tryParse(date);
-    if (selectedDate == null) return true;
-
-    try {
-      final selectedDateTime = _combineDateTime(selectedDate, time);
-
-      final sameMinute =
-          selectedDateTime.year == now.year &&
-          selectedDateTime.month == now.month &&
-          selectedDateTime.day == now.day &&
-          selectedDateTime.hour == now.hour &&
-          selectedDateTime.minute == now.minute;
-
-      if (sameMinute) {
-        await DialogHelper.showInfoDialog(context, message: 'Selected time cannot be the same as the current time');
-        return false;
-      }
-    } catch (_) {
-      await DialogHelper.showInfoDialog(context, message: 'Invalid time format');
-      return false;
-    }
-    return true;
-  }
-
-  DateTime _combineDateTime(DateTime date, String timeStr) {
-    final timeLower = timeStr.toLowerCase().trim();
-    final isPM = timeLower.contains('pm');
-    final clean = timeLower.replaceAll(RegExp('[^0-9:]'), '');
-    final parts = clean.split(':');
-
-    int hour = int.tryParse(parts[0]) ?? 0;
-    int minute = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
-
-    if (isPM && hour < 12) hour += 12;
-    if (!isPM && hour == 12) hour = 0;
-
-    return DateTime(date.year, date.month, date.day, hour, minute);
   }
 
   @override

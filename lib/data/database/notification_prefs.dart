@@ -1,19 +1,21 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+final notificationPrefsProvider = Provider<NotificationPrefs>((ref) => NotificationPrefs());
+
 class NotificationPrefs {
-  NotificationPrefs._();
-  static final NotificationPrefs instance = NotificationPrefs._();
+  NotificationPrefs();
 
-  static const _kEnabled = 'notif_enabled';
-  static const _kEnabledMinute = 'notif_enabled_minute';
+  static const _kEnabled = 'notification_enabled';
+  static const _kEnabledMinute = 'notification_enabled_minute';
 
-  static const _kMorningEnabled = 'notif_morning_enabled';
-  static const _kEveningEnabled = 'notif_evening_enabled';
+  static const _kMorningEnabled = 'notification_morning_enabled';
+  static const _kEveningEnabled = 'notification_evening_enabled';
 
-  static const _kMorningHour = 'notif_morning_hour';
-  static const _kMorningMinute = 'notif_morning_minute';
-  static const _kEveningHour = 'notif_evening_hour';
-  static const _kEveningMinute = 'notif_evening_minute';
+  static const _kMorningHour = 'notification_morning_hour';
+  static const _kMorningMinute = 'notification_morning_minute';
+  static const _kEveningHour = 'notification_evening_hour';
+  static const _kEveningMinute = 'notification_evening_minute';
 
   Future<SharedPreferences> get _prefs async => SharedPreferences.getInstance();
 

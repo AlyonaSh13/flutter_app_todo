@@ -57,8 +57,6 @@ class NotificationService {
   }
 
   static Future<bool> requestPermissions() async {
-    if (kIsWeb) return false;
-
     bool granted = false;
 
     if (defaultTargetPlatform == TargetPlatform.iOS) {
@@ -89,7 +87,6 @@ class NotificationService {
   }
 
   static Future<bool> hasNotificationPermission() async {
-    if (kIsWeb) return false;
     final status = await Permission.notification.status;
     return status.isGranted;
   }
@@ -113,8 +110,6 @@ class NotificationService {
     required String? body,
     required String? payload,
   }) async {
-    if (kIsWeb) return;
-
     await _notifications.show(id, title, body, await _notificationDetails(), payload: payload);
   }
 
@@ -125,7 +120,6 @@ class NotificationService {
     required String? payload,
     required Time time,
   }) async {
-    if (kIsWeb) return;
     final tzScheduledDate = _scheduledDaily(time);
 
     final hasExactAlarmPermission = await Permission.scheduleExactAlarm.isGranted;
@@ -154,8 +148,6 @@ class NotificationService {
     required String? payload,
     required DateTime dateTime,
   }) async {
-    if (kIsWeb) return;
-
     tz.TZDateTime scheduledDate = tz.TZDateTime.from(dateTime, tz.local);
 
     final hasExactAlarmPermission = await Permission.scheduleExactAlarm.isGranted;
@@ -185,19 +177,15 @@ class NotificationService {
   }
 
   static Future<void> cancelAllNotifications() async {
-    if (kIsWeb) return;
     await _notifications.cancelAll();
     log('All notifications cancelled');
   }
 
   static Future<void> cancel(int id) async {
-    if (kIsWeb) return;
     await _notifications.cancel(id);
   }
 
   static Future<void> restoreScheduledNotifications() async {
-    if (kIsWeb) return;
-
     try {
       final container = ProviderContainer();
       try {
